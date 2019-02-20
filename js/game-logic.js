@@ -1,132 +1,109 @@
+function addFigure(player, figureType) {
+    console.log(player.id);
+    let figuresCount = elementCounter('figure');
+    console.log(figuresCount);
+    if (figuresCount === 12) {
+        return;
+    }
+    console.log(player);
+    console.log(figureType);
+    let cellCoordinates = CanvasManager.getClickedCell();
+    let cellX = cellCoordinates.x;
+    let cellY = cellCoordinates.y;
 
+    let cellText;
+    let figure;
+    switch (figureType) {
+        case 'knight':
+            figure = new Knight(cellX, cellY, player.id);
+            cellText = 'K';
+            break;
+        case 'elf':
+            figure = new Elf(cellX, cellY, player.id);
+            cellText = 'E';
+            break;
+        case 'dwarf':
+            figure = new Dwarf(cellX, cellY, player.id);
+            cellText = 'D';
+            break;
+        default:
+            break;
+    }
 
+    console.log(cellX + ', ' + cellY);
 
+    let yStart, yEnd;
+    if (player.id === 1) {
+        yStart = 0;
+        yEnd = 1;
+    } else if (player.id === 2) {
+        yStart = 5;
+        yEnd = 6
+    }
 
+    console.log(this.field);
+    for (let x = 0; x < 9; x++) {
+        for (let y = yStart; y <= yEnd; y++) {
+            if (cellX === x && cellY === y) {
+                // this.field.forEach(function (cell) {
+                console.log(CanvasManager.field[9 * y + x]);
+                if (CanvasManager.field[9 * y + x] === 0) {
+                    CanvasManager.updateField({
+                        type: 'figure',
+                        figure: figureType,
+                        x: figure.x,
+                        y: figure.y,
+                        playerId: figure.playerId,
+                        attack: figure.attack,
+                        armour: figure.armour,
+                        health: figure.health,
+                        attackSpan: figure.attackSpan,
+                        speed: figure.speed
+                    });
 
+                    switch (figureType) {
+                        case 'knight':
+                            player.knights++;
+                            break;
+                        case 'elf':
+                            player.elves++;
+                            break;
+                        case 'dwarf':
+                            player.dwarfs++;
+                            break;
+                        default:
+                            break;
+                    }
 
+                    console.log(CanvasManager.players);
+                    CanvasManager.drawFigure(player, cellText, x, y);
+                    changeTurn();
+                }
+            }
+        }
+    }
+    console.log(CanvasManager.field);
+}
 
 function gameStart() {
-    // console.log(CanvasManager.players);
-    // let questionBox = document.querySelector('#questionBox');
-    // let turn = 0;
-    // let player1 = new Player('Player 1');
-    // let player2 = new Player('Player 2');
-    // let activePlayer = player1;
-
-    // console.log(questionBox);
-    // console.log(player1);
-    // console.log(player2);
-    // while(CanvasManager.figures < 6){
-    // if (turn % 2 === 0) {
-    //     activePlayer = player1;
-    // } else {
-    //     activePlayer = player2;
-    // }
-    // console.log(activePlayer);
-
-    // do {
-    //     if (turn % 2 === 0) {
-    //         activePlayer = player1;
-    //     } else {
-    //         activePlayer = player2;
-    //     }
-    //
-
-    // if (CanvasManager.figures.length === 12) {
-    //     return;
-    // }
     let questionBox = document.querySelector('#questionBox');
-    // questionBox.innerHTML = `<p>${CanvasManager.players[CanvasManager.turn].name}, choose figure:</p>`;
     CanvasManager.generateFirstStep(CanvasManager.players[CanvasManager.turn]);
-    // let par = document.createElement('p');
-    // par.appendChild(document.createTextNode(`${CanvasManager.players[CanvasManager.turn].name}, choose figure:`));
-    // questionBox.appendChild(par);
-    // let questionBox = document.querySelector('#questionBox');
     let buttons = document.querySelectorAll('button');
-    // // console.log(buttons);
     let chosenFigure;
-    // buttons.forEach(function (button) {
     questionBox.addEventListener('click', function (e) {
         console.log(e.target.innerText);
-        // console.log(button.innerText);
         chosenFigure = e.target.innerText;
         changeIsFigureChosen(true);
-        // CanvasManager.canvas.addEventListener('click', function () {
-        //     let coordinates = CanvasManager.addFigure(CanvasManager.players[CanvasManager.turn], chosenFigure);
-        //     CanvasManager.generateFirstStep(CanvasManager.players[CanvasManager.turn]);
-        //     CanvasManager.changeIsFigureChosen();
-        //     // let cellX = coordinates.x;
-        //     // let cellY = coordinates.y;
-        //     //
-        //     // console.log(cellX + ', ' + cellY);
-        //     // CanvasManager.changeTurn();
-        // });
-        // console.log(chosenFigure);
-        // CanvasManager.isFigureChosen = true;
-
-        // CanvasManager.canvas.addEventListener('click', function () {
-        //     let coordinates = CanvasManager.addFigure(CanvasManager.players[CanvasManager.turn],  chosenFigure);
-        //     // let cellX = coordinates.x;
-        //     // let cellY = coordinates.y;
-        //     //
-        //     // console.log(cellX + ', ' + cellY);
-        //     CanvasManager.changeTurn();
-        // });
-        // return chosenFigure;
     });
-    // });
-
-    // console.log(isFigureChosen);
-    // if(CanvasManager.isFigureChosen){
-
     console.log(CanvasManager.isFigureChosen);
-    //test
 
     CanvasManager.canvas.addEventListener('click', function () {
-        if(CanvasManager.isFigureChosen === true){
-            let coordinates = CanvasManager.addFigure(CanvasManager.players[CanvasManager.turn], chosenFigure);
+        if (CanvasManager.isFigureChosen === true) {
+            let coordinates = addFigure(CanvasManager.players[CanvasManager.turn], chosenFigure);
             CanvasManager.generateFirstStep(CanvasManager.players[CanvasManager.turn]);
             changeIsFigureChosen(false);
-            // let cellX = coordinates.x;
-            // let cellY = coordinates.y;
-            //
-            // console.log(cellX + ', ' + cellY);
-            // CanvasManager.changeTurn();
         }
-
     });
-
-
-    // }
-
-    //
-    //     // console.log(chosenFigure);
-    //
-    //     console.log(turn);
-    //     console.log(activePlayer);
-    //     console.log(CanvasManager.figures.length);
-    //     // return turn++;
-    //     return;
-    // } while (CanvasManager.figures.length < 6);
-
-    // questionBox.innerHTML = `<p>${activePlayer.name}, choose figure:</p>`;
-    // let formItem = document.createElement('form');
-    // questionBox.appendChild(formItem);
-    // if (activePlayer.dwarfs.length < activePlayer.numberOfDwarfs) {
-    //
-    //     let optionElement = document.createElement('input');
-    //     optionElement.setAttribute("type", "radio");
-    //     optionElement.setAttribute("name", "figure");
-    //     optionElement.setAttribute("value", "dwarf");
-    //     optionElement.innerHTML = 'dwarf';
-    //     // let label = document.createElement('label');
-    //     // label.appendChild(document.createTextNode('dwarf'));
-    //     // optionElement.appendChild(label);
-    //     // optionElement.appendChild(document.createTextNode('dwarf'));
-    //     formItem.appendChild(optionElement);
-    //     // selectItem.appendChild(document.create('option'));
-    // }
-    // }
 }
 
 
