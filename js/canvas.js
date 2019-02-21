@@ -9,13 +9,12 @@ CanvasManager.tileWidth = 50;
 CanvasManager.tileHeight = 50;
 
 CanvasManager.field = [];
-// CanvasManager.obstacles = [];
-// CanvasManager.figures = [];
 CanvasManager.typeOfFigures = ['knight', 'elf', 'dwarf'];
 CanvasManager.players = [];
 
 CanvasManager.turn = 0;
 CanvasManager.isFigureChosen = false;
+CanvasManager.chosenFigure = '';
 
 CanvasManager.initField = function () {
     for (let x = 0; x < 9; x++) {
@@ -59,10 +58,6 @@ CanvasManager.generateObstacles = function () {
         }
         CanvasManager.updateField({type: 'obstacle', x: x, y: y});
     }
-    // obstacles.forEach(function (obstacle) {
-    //     CanvasManager.updateField(obstacle);
-    //
-    // });
     console.log(CanvasManager.field);
 };
 
@@ -174,7 +169,6 @@ CanvasManager.drawFigure = function (player, cellText, x, y) {
         this.context.fillStyle = 'black';
         this.context.font = "20pt sans-serif";
         this.context.fillText(cellText, this.tileWidth * x + 15, this.tileHeight * y + 35);
-        // this.context.strokeText("Canvas Rocks!", 5, 130);
     } else if (player.id === 2) {
         this.context.fillStyle = 'black';
         this.context.fillRect(this.tileWidth * x, this.tileHeight * y, this.tileWidth, this.tileHeight);
@@ -185,42 +179,66 @@ CanvasManager.drawFigure = function (player, cellText, x, y) {
 };
 
 CanvasManager.generateFirstStep = function (player) {
+    console.log(player);
     let figuresCount = elementCounter('figures');
+    console.log(figuresCount);
     if (figuresCount === 12) {
         console.log('BATTLE 1');
         CanvasManager.generateBattle();
     } else {
-        console.log(player);
-        let questionBox = document.querySelector('#questionBox');
+        console.log(CanvasManager.turn);
+        let questionBox = document.querySelector(`#questionBoxPlayer${CanvasManager.turn + 1}`);
+        console.log(questionBox);
         questionBox.innerHTML = `<p>${CanvasManager.players[CanvasManager.turn].name}, choose figure:</p>`;
 
-        // let formItem = document.createElement('form');
-        // questionBox.appendChild(formItem);
-        this.typeOfFigures.forEach(function (type) {
+        let buttonHolder = document.createElement('div');
+        buttonHolder.id = `buttonHolderPlayer${CanvasManager.turn + 1}`;
+        console.log(buttonHolder);
+        questionBox.appendChild(buttonHolder);
+        CanvasManager.typeOfFigures.forEach(function (type) {
             switch (type) {
                 case 'knight':
                     if (player.knights < player.maxNumberOfKnights) {
                         let button = document.createElement('button');
                         button.appendChild(document.createTextNode(type));
-                        questionBox.appendChild(button);
+                        buttonHolder.appendChild(button);
                     }
                     break;
                 case 'elf':
                     if (player.elves < player.maxNumberOfElves) {
                         let button = document.createElement('button');
                         button.appendChild(document.createTextNode(type));
-                        questionBox.appendChild(button);
+                        buttonHolder.appendChild(button);
                     }
                     break;
                 case 'dwarf':
                     if (player.dwarfs < player.maxNumberOfDwarfs) {
                         let button = document.createElement('button');
                         button.appendChild(document.createTextNode(type));
-                        questionBox.appendChild(button);
+                        buttonHolder.appendChild(button);
                     }
                     break;
                 default:
                     break;
+            }
+        });
+        buttonHolder.addEventListener('click', function (e) {
+            console.log(e.target.innerText);
+
+            CanvasManager.chosenFigure = e.target.innerText;
+            changeIsFigureChosen(true);
+            buttonHolder.className = 'hide';
+
+        });
+        console.log(CanvasManager.isFigureChosen);
+
+        CanvasManager.canvas.addEventListener('click', function () {
+            if (CanvasManager.isFigureChosen === true) {
+                console.log(CanvasManager.chosenFigure);
+                let coordinates = addFigure(CanvasManager.players[CanvasManager.turn], CanvasManager.chosenFigure);
+
+                CanvasManager.generateFirstStep(CanvasManager.players[CanvasManager.turn]);
+                changeIsFigureChosen(false);
             }
         });
     }

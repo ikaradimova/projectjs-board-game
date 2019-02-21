@@ -41,7 +41,7 @@ function addFigure(player, figureType) {
         yEnd = 6
     }
 
-    console.log(this.field);
+    console.log(CanvasManager.field);
     for (let x = 0; x < 9; x++) {
         for (let y = yStart; y <= yEnd; y++) {
             if (cellX === x && cellY === y) {
@@ -88,24 +88,13 @@ function addFigure(player, figureType) {
 }
 
 function gameStart() {
-    let questionBox = document.querySelector('#questionBox');
-    CanvasManager.generateFirstStep(CanvasManager.players[CanvasManager.turn]);
-    let buttons = document.querySelectorAll('button');
-    let chosenFigure;
-    questionBox.addEventListener('click', function (e) {
-        console.log(e.target.innerText);
-        chosenFigure = e.target.innerText;
-        changeIsFigureChosen(true);
-    });
-    console.log(CanvasManager.isFigureChosen);
+    let figuresCount = elementCounter('figures');
 
-    CanvasManager.canvas.addEventListener('click', function () {
-        if (CanvasManager.isFigureChosen === true) {
-            let coordinates = addFigure(CanvasManager.players[CanvasManager.turn], chosenFigure);
-            CanvasManager.generateFirstStep(CanvasManager.players[CanvasManager.turn]);
-            changeIsFigureChosen(false);
-        }
-    });
+    if(figuresCount <= 12){
+        CanvasManager.generateFirstStep(CanvasManager.players[CanvasManager.turn]);
+    } else {
+        CanvasManager.generateBattle();
+    }
 }
 
 
@@ -123,7 +112,6 @@ function changeIsFigureChosen(state) {
 
 function elementCounter(typeOfElement) {
     let elementCount = 0;
-    // let figureCount = 0;
     CanvasManager.field.forEach(function (cell) {
         if (cell.type === typeOfElement) {
             elementCount++;
