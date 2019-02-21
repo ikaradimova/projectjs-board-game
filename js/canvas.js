@@ -30,9 +30,9 @@ CanvasManager.init = function (element) {
     this.context = this.canvas.getContext('2d');
     CanvasManager.initField();
     console.log(CanvasManager.field);
-    let player1 = new Player(1, 'Player 1');
+    let player1 = new Player(1, 'Player 1', 0);
     CanvasManager.players.push(player1);
-    let player2 = new Player(2, 'Player 2');
+    let player2 = new Player(2, 'Player 2', 0);
     CanvasManager.players.push(player2);
     CanvasManager.draw();
 };

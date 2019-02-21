@@ -1,4 +1,4 @@
-let Player = function(id, name){
+let Player = function(id, name, points){
     this.maxNumberOfKnights = 2;
     this.knights = 0;
     this.maxNumberOfElves = 2;
@@ -7,4 +7,5 @@ let Player = function(id, name){
     this.dwarfs = 0;
     this.name = name;
     this.id = id;
+    this.points = points;
 };

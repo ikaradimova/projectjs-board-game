@@ -1,4 +1,4 @@
-let Elf = function(x, y, playerId) {
+let Elf = function(x, y, playerId, figureId) {
     this.attack = 5;
     this.armour = 1;
     this.health = 10;
@@ -8,4 +8,5 @@ let Elf = function(x, y, playerId) {
     this.y = y;
     this.playerId = playerId;
     this.type = 'elf';
+    this.id = figureId
 };

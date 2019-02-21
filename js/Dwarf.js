@@ -1,4 +1,4 @@
-let Dwarf = function(x, y, playerId) {
+let Dwarf = function(x, y, playerId, figureId) {
     this.attack = 6;
     this.armour = 2;
     this.health = 12;
@@ -8,4 +8,5 @@ let Dwarf = function(x, y, playerId) {
     this.y = y;
     this.playerId = playerId;
     this.type = 'dwarf';
+    this.id = figureId;
 };

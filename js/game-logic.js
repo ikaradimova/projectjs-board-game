@@ -58,7 +58,9 @@ function addFigure(player, figureType) {
                         armour: figure.armour,
                         health: figure.health,
                         attackSpan: figure.attackSpan,
-                        speed: figure.speed
+                        speed: figure.speed,
+                        points: figure.points,
+                        id: ++figuresCount
                     });
 
                     switch (figureType) {

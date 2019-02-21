@@ -1,4 +1,4 @@
-let Knight = function(x, y, playerId) {
+let Knight = function(x, y, playerId, figureId) {
     this.attack = 8;
     this.armour = 3;
     this.health = 15;
@@ -8,4 +8,5 @@ let Knight = function(x, y, playerId) {
     this.y = y;
     this.playerId = playerId;
     this.type = 'knight';
+    this.id = figureId;
 };
