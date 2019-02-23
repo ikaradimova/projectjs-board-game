@@ -92,7 +92,7 @@ function addFigure(player, figureType) {
 
 function gameStart() {
     // return new Promise(function(resolve){
-        generateFirstStep(CanvasManager.players[CanvasManager.turn]);
+    generateFirstStep(CanvasManager.players[CanvasManager.turn]);
     // });
     // generateBattle();
 }
@@ -132,7 +132,7 @@ function randomGenerator(min, max) {
 }
 
 function generateFirstStep(player) {
-    return new Promise(function(resolve){
+    return new Promise(function (resolve) {
         console.log('first step');
         // console.log(player);
         let figuresCount = elementCounter('figure');
@@ -175,7 +175,7 @@ function generateFirstStep(player) {
                         break;
                 }
             });
-            return new Promise(function(resolve){
+            return new Promise(function (resolve) {
                 buttonHolder.addEventListener('click', function (e) {
                     // console.log(e.target.innerText);
 
@@ -283,11 +283,16 @@ function generateBattle() {
             console.log('x: ' + cellX + ', y: ' + cellY);
             CanvasManager.chosenFigure = CanvasManager.field[9 * cellY + cellX];
             changeIsFigureChosen(true);
-            let possibleMoves = CanvasManager.drawPossibleMoves(CanvasManager.chosenFigure);
+            if (CanvasManager.chosenAction === 'move') {
+                let possibleMoves = CanvasManager.drawPossibleMoves(CanvasManager.chosenFigure);
+            }
 
 
             CanvasManager.canvas.addEventListener('contextmenu', function (e) {
                 e.preventDefault();
+                let cellCoordinates = CanvasManager.getClickedCell();
+                let attackedCellX = cellCoordinates.x;
+                let attackedCellY = cellCoordinates.y;
                 switch (CanvasManager.chosenAction) {
                     case 'move':
                         console.log('move is chosen');
@@ -301,7 +306,8 @@ function generateBattle() {
                     // break;
                     case 'attack':
                         console.log('attack is chosen');
-                        attackFigure(CanvasManager.chosenFigure);
+                        changeIsActionChosen(false);
+                        attackFigure(cellX, cellY, attackedCellX, attackedCellY);
                         // changeTurn();
 
                         // generateBattle();
@@ -347,7 +353,6 @@ function generateBattle() {
             //     default:
             //         break;
             // }
-
 
 
             console.log('test');
@@ -418,7 +423,6 @@ function generateBattle() {
     //         }
     //     }
     // });
-
 
 
     // if (CanvasManager.isActionChosen === true) {
@@ -566,52 +570,74 @@ function moveFigure(figure) {
 
     // CanvasManager.drawPossibleMoves(figure);
     // if (CanvasManager.isFigureChosen === true) {
-        console.log(figure);
-        // console.log('move');
-        let emptyCellX = figure.x;
-        let emptyCellY = figure.y;
-        // CanvasManager.canvas.addEventListener('contextmenu', function (e) {
-        //     e.stopPropagation();
-            console.log('moveFigure event listener');
-            let cellCoordinates = CanvasManager.getClickedCell();
-            let cellX = cellCoordinates.x;
-            let cellY = cellCoordinates.y;
-            CanvasManager.updateField({
-                type: 'figure',
-                figure: figure.figure,
-                x: cellX,
-                y: cellY,
-                playerId: figure.playerId,
-                attack: figure.attack,
-                armour: figure.armour,
-                health: figure.health,
-                attackSpan: figure.attackSpan,
-                speed: figure.speed,
-                points: figure.points,
-                id: figure.id,
-            });
-            CanvasManager.emptyCell(emptyCellX, emptyCellY);
-            console.log(CanvasManager.field);
-            CanvasManager.draw();
-            changeTurn();
-            changeIsFigureChosen(false);
-            changeIsActionChosen(false);
-            CanvasManager.chosenAction = '';
-            CanvasManager.chosenFigure = '';
+    console.log(figure);
+    // console.log('move');
+    let emptyCellX = figure.x;
+    let emptyCellY = figure.y;
+    // CanvasManager.canvas.addEventListener('contextmenu', function (e) {
+    //     e.stopPropagation();
+    console.log('moveFigure event listener');
+    let cellCoordinates = CanvasManager.getClickedCell();
+    let cellX = cellCoordinates.x;
+    let cellY = cellCoordinates.y;
+    CanvasManager.updateField({
+        type: 'figure',
+        figure: figure.figure,
+        x: cellX,
+        y: cellY,
+        playerId: figure.playerId,
+        attack: figure.attack,
+        armour: figure.armour,
+        health: figure.health,
+        attackSpan: figure.attackSpan,
+        speed: figure.speed,
+        points: figure.points,
+        id: figure.id,
+    });
+    CanvasManager.emptyCell(emptyCellX, emptyCellY);
+    console.log(CanvasManager.field);
+    CanvasManager.draw();
+    changeTurn();
+    changeIsFigureChosen(false);
+    changeIsActionChosen(false);
+    CanvasManager.chosenAction = '';
+    CanvasManager.chosenFigure = '';
 
-            generateBattle();
-        // });
+    generateBattle();
+    // });
     // }
 
 
 }
 
-function attackFigure(figure) {
-    console.log(figure);
-    // console.log('attack');
-    changeTurn();
+function attackFigure(attackingX, attackingY, attackedX, attackedY) {
+    console.log('attack figure');
+    let attackingFigure = getFigureByCoordinates(attackingX, attackingY);
+    let attackedFigure = getFigureByCoordinates(attackedX, attackedY);
+    if (checkIfAttackIsPossible(attackingX, attackingY, attackedX, attackedY) === true) {
+        let attackState = generateDiceSituation(attackingFigure, attackedFigure);
+        switch (attackState) {
+            /** unsuccessful attack */
+            case 0:
+                break;
+            /** half successful attack */
+            case 1:
+                generatePoints(attackingFigure, attackedFigure, 1);
+                break;
+            /** successful attack */
+            case 2:
+                generatePoints(attackingFigure, attackedFigure, 2);
+                break;
+            default:
+                break;
+        }
 
-    generateBattle();
+    }
+    console.log(checkIfAttackIsPossible(attackingX, attackingY, attackedX, attackedY));
+    // console.log('attack');
+    // changeTurn();
+
+    // generateBattle();
 }
 
 function healFigure(figure) {
@@ -624,7 +650,16 @@ function healFigure(figure) {
 
 function endOfGame() {
     console.log('end');
+}
 
+function getFigureByCoordinates(x, y) {
+    let figure = {};
+    CanvasManager.field.forEach(function (cell) {
+        if (cell.x === x && cell.y === y) {
+            figure = cell;
+        }
+    });
+    return figure;
 }
 
 function checkIfPositionIsEmpty(x, y) {
@@ -788,16 +823,61 @@ function getPossiblePositions(figure) {
     return possiblePositions;
 }
 
-function checkIfFigureBelongsToPlayer(x, y, player){
+function checkIfFigureBelongsToPlayer(x, y, player) {
     let result = false;
-    player.figures.forEach(function(figure){
-        if(figure.x === x && figure.y === y){
+    player.figures.forEach(function (figure) {
+        if (figure.x === x && figure.y === y) {
             console.log(figure.x + ', ' + figure.y);
             console.log('true');
             result = true;
-        // } else {
-        //     return false;
         }
     });
     return result;
+}
+
+function checkIfAttackIsPossible(attackingX, attackingY, attackedX, attackedY) {
+    let posibility = false;
+    let attackingFigure = getFigureByCoordinates(attackingX, attackingY);
+    let attackedFigure = getFigureByCoordinates(attackedX, attackedY);
+    switch (attackingFigure.figure) {
+        case 'knight':
+        case 'elf':
+            if (Math.abs(attackingX - attackedX) === attackingFigure.attackSpan ||
+                Math.abs(attackingY - attackedY) === attackingFigure.attackSpan
+            ) {
+                posibility = true;
+            }
+            break;
+        case 'dwarf':
+            if (Math.abs(attackingX - attackedX) === attackingFigure.attackSpan) {
+                if (CanvasManager.field[attackingY * 9 + (attackingX + attackedX) / 2] === 0) {
+                    posibility = true;
+                }
+            }
+            if (Math.abs(attackingY - attackedY) === attackingFigure.attackSpan) {
+                if (CanvasManager.field[((attackingY + attackedY) / 2) * 9 + attackingX] === 0) {
+                    posibility = true;
+                }
+            }
+            break;
+        // case 'elf':
+        //     break;
+        default:
+            break;
+    }
+    return posibility;
+}
+
+function generateDiceSituation(attackingFigure, attackedFigure){
+
+}
+function generatePoints(attackingFigure, attackedFigure, state){
+    switch(state){
+        case 1:
+            break;
+        case 2:
+            break;
+        default:
+            break;
+    }
 }
