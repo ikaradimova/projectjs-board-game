@@ -8,4 +8,10 @@ let Player = function(id, name, points){
     this.name = name;
     this.id = id;
     this.points = points;
+    this.numberOfFigures = 0;
+    this.figures = [];
+
+    // function numberOfFigures(){
+    //     return (this.knights + this.dwarfs + this.elves);
+    // }
 };
