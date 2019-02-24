@@ -18,6 +18,9 @@ CanvasManager.isFigureChosen = false;
 CanvasManager.isActionChosen = false;
 CanvasManager.chosenFigure = '';
 CanvasManager.chosenAction = '';
+CanvasManager.isAttackFinished = false;
+CanvasManager.isMovementFinished = false;
+CanvasManager.isFirstStepFinished = false;
 CanvasManager.gamePhase = 1;
 
 CanvasManager.initField = function () {

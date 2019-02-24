@@ -10,6 +10,7 @@ let Player = function(id, name, points){
     this.points = points;
     this.numberOfFigures = 0;
     this.figures = [];
+    this.lostFigures = [];
 
     // function numberOfFigures(){
     //     return (this.knights + this.dwarfs + this.elves);
