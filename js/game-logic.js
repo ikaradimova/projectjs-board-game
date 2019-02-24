@@ -59,7 +59,6 @@ function addFigure(player, figureType) {
                         health: figure.health,
                         attackSpan: figure.attackSpan,
                         speed: figure.speed,
-                        points: figure.points,
                         id: ++figuresCount,
                     };
                     CanvasManager.updateField(currentFigure);
@@ -221,6 +220,7 @@ function generateBattle() {
     CanvasManager.isAttackFinished = false;
 
     console.log('battle');
+    console.log('round: ' + CanvasManager.round);
     console.log(CanvasManager.players);
     console.log(CanvasManager.field);
     // if (CanvasManager.players[0].numberOfFigures > 0 || CanvasManager.players[1].numberOfFigures > 0) {
@@ -307,52 +307,65 @@ function generateBattle() {
                 let possibleMoves = CanvasManager.drawPossibleMoves(CanvasManager.chosenFigure);
             }
 
+            switch(CanvasManager.chosenAction){
+                case 'move':
+                case 'attack':
+                    CanvasManager.canvas.addEventListener('contextmenu', function (e) {
+                        e.preventDefault();
+                        let cellCoordinates = CanvasManager.getClickedCell();
+                        let rightClickedCellX = cellCoordinates.x;
+                        let rightClickedCellY = cellCoordinates.y;
+                        switch (CanvasManager.chosenAction) {
+                            case 'move':
+                                let possiblePositions = getPossiblePositions(CanvasManager.chosenFigure);
+                                possiblePositions.forEach(function (possiblePosition) {
+                                    if (possiblePosition.x === rightClickedCellX && possiblePosition.y === rightClickedCellY) {
+                                        console.log('move is chosen');
+                                        changeIsActionChosen(false);
+                                        moveFigure(CanvasManager.chosenFigure, rightClickedCellX, rightClickedCellY);
+                                    }
+                                });
 
-            CanvasManager.canvas.addEventListener('contextmenu', function (e) {
-                e.preventDefault();
-                let cellCoordinates = CanvasManager.getClickedCell();
-                let rightClickedCellX = cellCoordinates.x;
-                let rightClickedCellY = cellCoordinates.y;
-                switch (CanvasManager.chosenAction) {
-                    case 'move':
-                        let possiblePositions = getPossiblePositions(CanvasManager.chosenFigure);
-                        possiblePositions.forEach(function (possiblePosition) {
-                            if (possiblePosition.x === rightClickedCellX && possiblePosition.y === rightClickedCellY) {
-                                console.log('move is chosen');
-                                changeIsActionChosen(false);
-                                moveFigure(CanvasManager.chosenFigure, rightClickedCellX, rightClickedCellY);
-                            }
-                        });
 
+                                // changeTurn();
 
-                        // changeTurn();
+                                // generateBattle();
+                                return;
+                            // break;
+                            case 'attack':
+                                if (CanvasManager.chosenFigure.x === cellX && CanvasManager.chosenFigure.y === cellY) {
+                                    console.log('attack is chosen');
+                                    changeIsActionChosen(false);
+                                    // console.log(`first click - ${cellX}, ${cellY}`);
+                                    // console.log(`second click - ${rightClickedCellX}, ${rightClickedCellY}`);
+                                    attackFigure(cellX, cellY, rightClickedCellX, rightClickedCellY);
+                                }
+                                // changeTurn();
 
-                        // generateBattle();
-                        return;
-                    // break;
-                    case 'attack':
-                        if (CanvasManager.chosenFigure.x === cellX && CanvasManager.chosenFigure.y === cellY) {
-                            console.log('attack is chosen');
-                            changeIsActionChosen(false);
-                            // console.log(`first click - ${cellX}, ${cellY}`);
-                            // console.log(`second click - ${rightClickedCellX}, ${rightClickedCellY}`);
-                            attackFigure(cellX, cellY, rightClickedCellX, rightClickedCellY);
+                                // generateBattle();
+                                return;
+                            // case 'heal':
+                            //     console.log('heal is chosen');
+                            //     healFigure(CanvasManager.chosenFigure);
+                            //     // changeTurn();
+                            //     //
+                            //     // generateBattle();
+                            //     break;
+                            default:
+                                break;
                         }
-                        // changeTurn();
+                    });
+                    break;
+                case 'heal':
+                    console.log('heal is chosen');
+                    healFigure(CanvasManager.chosenFigure);
+                    break;
+                default:
+                    break;
+            }
 
-                        // generateBattle();
-                        return;
-                    case 'heal':
-                        console.log('heal is chosen');
-                        healFigure(CanvasManager.chosenFigure);
-                        // changeTurn();
-                        //
-                        // generateBattle();
-                        break;
-                    default:
-                        break;
-                }
-            });
+
+
 
             // switch (CanvasManager.chosenAction) {
             //     case 'move':
@@ -621,7 +634,6 @@ function moveFigure(figure, x, y) {
             health: figure.health,
             attackSpan: figure.attackSpan,
             speed: figure.speed,
-            points: figure.points,
             id: figure.id,
         });
         CanvasManager.players[CanvasManager.turn].figures.forEach(function (playerFigure) {
@@ -693,6 +705,7 @@ function attackFigure(attackingX, attackingY, attackedX, attackedY) {
                 CanvasManager.chosenFigure = '';
                 console.log('attack finished');
                 changeTurn();
+                CanvasManager.round++;
                 generateBattle();
             }, 2000);
 
@@ -718,9 +731,27 @@ function attackFigure(attackingX, attackingY, attackedX, attackedY) {
 function healFigure(figure) {
     console.log(figure);
     console.log('heal');
-    changeTurn();
+    let firstDiceResult = randomGenerator(1, 6);
+    console.log('first dice: ' + firstDiceResult);
+    figure.health = (figure.health + firstDiceResult) > figure.maxHealth ? figure.maxHealth : figure.health + firstDiceResult;
+    CanvasManager.players[CanvasManager.turn].figures.forEach(function(playerFigure){
+       if(playerFigure.id === figure.id){
+           playerFigure.health = figure.health;
+       }
+    });
 
-    generateBattle();
+    let secondDiceResult = randomGenerator(1, 6);
+    console.log('second dice: ' + secondDiceResult);
+    if(secondDiceResult % 2 === 0){
+        changeTurn();
+        CanvasManager.round++;
+        generateBattle();
+    } else {
+        generateBattle();
+    }
+
+
+
 }
 
 function endOfGame() {
@@ -901,7 +932,7 @@ function getPossiblePositions(figure) {
 function checkIfFigureBelongsToPlayer(x, y, player) {
     let result = false;
     player.figures.forEach(function (figure) {
-        console.log(figure);
+        // console.log(figure);
         if (figure.x === x && figure.y === y) {
             result = true;
         }
@@ -961,6 +992,15 @@ function generateDiceSituation(attackedFigure) {
 
 function generatePoints(attackingFigure, attackedFigure, state) {
     let wreck = 0;
+
+    let losingPlayer = null;
+    /** check which player's turn is, so the other one is the one losing figures */
+    if (CanvasManager.turn === 0) {
+        losingPlayer = CanvasManager.players[1];
+    } else if (CanvasManager.turn === 1) {
+        losingPlayer = CanvasManager.players[0];
+    }
+
     switch (state) {
         case 1:
             wreck = attackingFigure.attack - attackedFigure.armour;
@@ -976,16 +1016,22 @@ function generatePoints(attackingFigure, attackedFigure, state) {
             break;
     }
 
-    if(attackedFigure.health <= 0){
-        CanvasManager.emptyCell(attackedFigure.x, attackedFigure.y);
-        CanvasManager.draw();
+    losingPlayer.figures.forEach(function(playerFigure){
+        if(playerFigure.id === attackedFigure.id){
+            playerFigure.health = attackedFigure.health;
+        }
+    });
 
-        CanvasManager.players[CanvasManager.turn].figures.forEach(function(playerFigure, key){
-            if(playerFigure.id === attackedFigure.id){
-                CanvasManager.players[CanvasManager.turn].figures.splice(key, 0);
+    /** if health is below 0, figure is removed from the game */
+    if (attackedFigure.health <= 0) {
+
+        losingPlayer.figures.forEach(function (playerFigure, key) {
+            if (playerFigure.id === attackedFigure.id) {
+                losingPlayer.figures.splice(key, 1);
             }
         });
-        CanvasManager.players[CanvasManager.turn].lostFigures.push(attackedFigure);
-
+        losingPlayer.lostFigures.push(attackedFigure);
+        CanvasManager.emptyCell(attackedFigure.x, attackedFigure.y);
+        CanvasManager.draw();
     }
 }

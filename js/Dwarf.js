@@ -9,4 +9,5 @@ let Dwarf = function(x, y, playerId, figureId) {
     this.playerId = playerId;
     this.type = 'dwarf';
     this.id = figureId;
+    this.maxHealth = 12;
 };

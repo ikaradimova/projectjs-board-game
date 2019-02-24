@@ -8,5 +8,6 @@ let Elf = function(x, y, playerId, figureId) {
     this.y = y;
     this.playerId = playerId;
     this.type = 'elf';
-    this.id = figureId
+    this.id = figureId;
+    this.maxHealth = 10;
 };

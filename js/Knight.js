@@ -9,4 +9,5 @@ let Knight = function(x, y, playerId, figureId) {
     this.playerId = playerId;
     this.type = 'knight';
     this.id = figureId;
+    this.maxHealth = 15;
 };
