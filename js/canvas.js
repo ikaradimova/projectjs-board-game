@@ -21,10 +21,14 @@ CanvasManager.chosenAction = '';
 CanvasManager.isAttackFinished = false;
 CanvasManager.isMovementFinished = false;
 CanvasManager.isFirstStepFinished = false;
+CanvasManager.isHealingFinished = false;
 CanvasManager.gamePhase = 1;
 
 CanvasManager.round = 0;
 
+/**
+ * Function for creating empty field
+ */
 CanvasManager.initField = function () {
     for (let x = 0; x < 9; x++) {
         for (let y = 0; y < 7; y++) {
@@ -33,19 +37,30 @@ CanvasManager.initField = function () {
     }
 };
 
+/**
+ * Function for canvas initiation
+ * @param element
+ */
 CanvasManager.init = function (element) {
     this.canvas = document.getElementById(element);
     this.context = this.canvas.getContext('2d');
+    /** Field initiation */
     CanvasManager.initField();
-    console.log(CanvasManager.field);
+    /** Players creation */
     let player1 = new Player(1, 'Player 1', 0);
     CanvasManager.players.push(player1);
     let player2 = new Player(2, 'Player 2', 0);
     CanvasManager.players.push(player2);
+    /** Generating obstacles in battlefield */
     CanvasManager.generateObstacles();
+    /** Drawing field */
     CanvasManager.draw();
 };
 
+
+/**
+ * Function for generating obstacles
+ */
 CanvasManager.generateObstacles = function () {
     /** generating number of obstacles */
     let numberOfObstacles = randomGenerator(1, 5);
@@ -71,17 +86,30 @@ CanvasManager.generateObstacles = function () {
     console.log(CanvasManager.field);
 };
 
+/**
+ * Function for updating the field
+ * @param object - object to be updated
+ */
 CanvasManager.updateField = function (object) {
-    let index;
-    index = 9 * object.y + object.x;
+    /** calculating the index of the object */
+    let index = 9 * object.y + object.x;
     CanvasManager.field.splice(index, 1, object);
 };
 
+/**
+ * Function for removing objects in specific cell
+ * @param x - x coordinate of the cell we want to empty
+ * @param y - y coordinate of the cell we want to empty
+ */
 CanvasManager.emptyCell = function (x, y) {
+    /** calculating the index of the object */
     let index = 9 * y + x;
     CanvasManager.field.splice(index, 1, 0);
 };
 
+/**
+ * Function for drawing initial field pattern
+ */
 CanvasManager.drawInitialField = function () {
     for (let x = 0; x < 9; x++) {
         for (let y = 0; y < 7; y++) {
@@ -102,7 +130,6 @@ CanvasManager.drawInitialField = function () {
                     CanvasManager.context.fillRect(CanvasManager.tileWidth * x, CanvasManager.tileHeight * y, CanvasManager.tileWidth, this.tileHeight);
                 }
             } else {
-
                 CanvasManager.context.fillStyle = '#CDCDCD';
                 CanvasManager.context.fillRect(CanvasManager.tileWidth * x, CanvasManager.tileHeight * y, CanvasManager.tileWidth, CanvasManager.tileHeight);
 
@@ -111,63 +138,69 @@ CanvasManager.drawInitialField = function () {
     }
 };
 
+/**
+ * Function for drawing figures
+ */
 CanvasManager.drawFigures = function () {
     CanvasManager.field.forEach(function (cell) {
-            if (cell.type === 'figure') {
-                let cellText;
-                switch (cell.figure) {
-                    case 'knight':
-                        cellText = 'K';
-                        break;
-                    case 'elf':
-                        cellText = 'E';
-                        break;
-                    case 'dwarf':
-                        cellText = 'D';
-                        break;
-                    default:
-                        break;
-                }
-                CanvasManager.context.moveTo(0, (CanvasManager.tileHeight * cell.y) - 0.5);
-                CanvasManager.context.lineTo(450, (CanvasManager.tileHeight * cell.y) - 0.5);
-                CanvasManager.context.stroke();
+        /** check what type of object is in cell (figure/obstacle) */
+        if (cell.type === 'figure') {
+            /** generate text in cell, depending on what type of figure is in there */
+            let cellText;
+            switch (cell.figure) {
+                case 'knight':
+                    cellText = 'K';
+                    break;
+                case 'elf':
+                    cellText = 'E';
+                    break;
+                case 'dwarf':
+                    cellText = 'D';
+                    break;
+                default:
+                    break;
+            }
+            CanvasManager.context.moveTo(0, (CanvasManager.tileHeight * cell.y) - 0.5);
+            CanvasManager.context.lineTo(450, (CanvasManager.tileHeight * cell.y) - 0.5);
+            CanvasManager.context.stroke();
 
-                CanvasManager.context.moveTo((CanvasManager.tileWidth * cell.x) - 0.5, 0);
-                CanvasManager.context.lineTo((CanvasManager.tileWidth * cell.x) - 0.5, 350);
-                CanvasManager.context.stroke();
+            CanvasManager.context.moveTo((CanvasManager.tileWidth * cell.x) - 0.5, 0);
+            CanvasManager.context.lineTo((CanvasManager.tileWidth * cell.x) - 0.5, 350);
+            CanvasManager.context.stroke();
 
-                if (cell.playerId === 1) {
-                    CanvasManager.context.fillStyle = 'red';
-                    CanvasManager.context.fillRect(CanvasManager.tileWidth * cell.x, CanvasManager.tileHeight * cell.y, CanvasManager.tileWidth, CanvasManager.tileHeight);
-                    CanvasManager.context.fillStyle = 'black';
-                    CanvasManager.context.font = "20pt sans-serif";
-                    CanvasManager.context.fillText(cellText, CanvasManager.tileWidth * cell.x + 15, CanvasManager.tileHeight * cell.y + 35);
-                } else if (cell.playerId === 2) {
-                    CanvasManager.context.fillStyle = 'black';
-                    CanvasManager.context.fillRect(CanvasManager.tileWidth * cell.x, CanvasManager.tileHeight * cell.y, CanvasManager.tileWidth, CanvasManager.tileHeight);
-                    CanvasManager.context.fillStyle = 'red';
-                    CanvasManager.context.font = "20pt sans-serif";
-                    CanvasManager.context.fillText(cellText, CanvasManager.tileWidth * cell.x + 15, CanvasManager.tileHeight * cell.y + 35);
-                }
-            } else if (cell.type === 'obstacle') {
-                for (let x = 0; x < 9; x++) {
-                    for (let y = 0; y < 7; y++) {
-                        CanvasManager.context.moveTo(0, (CanvasManager.tileHeight * y) - 0.5);
-                        CanvasManager.context.lineTo(450, (CanvasManager.tileHeight * y) - 0.5);
-                        CanvasManager.context.stroke();
+            if (cell.playerId === 1) {
+                /** if player 1, figures fill color is red and text fill color is black */
+                CanvasManager.context.fillStyle = 'red';
+                CanvasManager.context.fillRect(CanvasManager.tileWidth * cell.x, CanvasManager.tileHeight * cell.y, CanvasManager.tileWidth, CanvasManager.tileHeight);
+                CanvasManager.context.fillStyle = 'black';
+                CanvasManager.context.font = "20pt sans-serif";
+                CanvasManager.context.fillText(cellText, CanvasManager.tileWidth * cell.x + 15, CanvasManager.tileHeight * cell.y + 35);
+            } else if (cell.playerId === 2) {
+                /** if player 2, figures fill color is black and text fill color is red */
+                CanvasManager.context.fillStyle = 'black';
+                CanvasManager.context.fillRect(CanvasManager.tileWidth * cell.x, CanvasManager.tileHeight * cell.y, CanvasManager.tileWidth, CanvasManager.tileHeight);
+                CanvasManager.context.fillStyle = 'red';
+                CanvasManager.context.font = "20pt sans-serif";
+                CanvasManager.context.fillText(cellText, CanvasManager.tileWidth * cell.x + 15, CanvasManager.tileHeight * cell.y + 35);
+            }
+        } else if (cell.type === 'obstacle') {
+            for (let x = 0; x < 9; x++) {
+                for (let y = 0; y < 7; y++) {
+                    CanvasManager.context.moveTo(0, (CanvasManager.tileHeight * y) - 0.5);
+                    CanvasManager.context.lineTo(450, (CanvasManager.tileHeight * y) - 0.5);
+                    CanvasManager.context.stroke();
 
-                        CanvasManager.context.moveTo((CanvasManager.tileWidth * x) - 0.5, 0);
-                        CanvasManager.context.lineTo((CanvasManager.tileWidth * x) - 0.5, 350);
-                        CanvasManager.context.stroke();
-                        if (x === cell.x && y === cell.y) {
-                            CanvasManager.context.fillStyle = '#2B2B2B';
-                            CanvasManager.context.fillRect(CanvasManager.tileWidth * x, CanvasManager.tileHeight * y, CanvasManager.tileWidth, CanvasManager.tileHeight);
-                        }
+                    CanvasManager.context.moveTo((CanvasManager.tileWidth * x) - 0.5, 0);
+                    CanvasManager.context.lineTo((CanvasManager.tileWidth * x) - 0.5, 350);
+                    CanvasManager.context.stroke();
+                    if (x === cell.x && y === cell.y) {
+                        CanvasManager.context.fillStyle = '#2B2B2B';
+                        CanvasManager.context.fillRect(CanvasManager.tileWidth * x, CanvasManager.tileHeight * y, CanvasManager.tileWidth, CanvasManager.tileHeight);
                     }
                 }
             }
         }
-    );
+    });
 };
 
 CanvasManager.draw = function () {

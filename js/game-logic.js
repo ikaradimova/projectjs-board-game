@@ -214,10 +214,9 @@ function generateFirstStep(player) {
 
 
 function generateBattle() {
-    // CanvasManager.chosenAction = '';
-    // CanvasManager.chosenFigure = '';
     CanvasManager.isMovementFinished = false;
     CanvasManager.isAttackFinished = false;
+    CanvasManager.isHealingFinished = false;
 
     console.log('battle');
     console.log('round: ' + CanvasManager.round);
@@ -241,6 +240,7 @@ function generateBattle() {
         buttonHolder.appendChild(button);
     });
 
+    console.log('before button click');
     /** choose action */
     buttonHolder.addEventListener('click', function (e) {
         // console.log(e.target.innerText);
@@ -279,6 +279,9 @@ function generateBattle() {
         // }
         // CanvasManager.drawPossibleFirstMoves(CanvasManager.players[CanvasManager.turn]);
 
+        console.log('before figure click');
+
+
     });
 
     CanvasManager.canvas.addEventListener('click', function (e) {
@@ -294,6 +297,7 @@ function generateBattle() {
         // console.log(checkIfFigureBelongsToPlayer(cellX, cellY, CanvasManager.players[CanvasManager.turn]));
 
         console.log(CanvasManager.isActionChosen);
+        console.log(CanvasManager.chosenAction);
         console.log(checkIfFigureBelongsToPlayer(cellX, cellY, CanvasManager.players[CanvasManager.turn]));
         if (CanvasManager.isActionChosen === true &&
             checkIfFigureBelongsToPlayer(cellX, cellY, CanvasManager.players[CanvasManager.turn]) === true
@@ -322,6 +326,7 @@ function generateBattle() {
                                     if (possiblePosition.x === rightClickedCellX && possiblePosition.y === rightClickedCellY) {
                                         console.log('move is chosen');
                                         changeIsActionChosen(false);
+                                        console.log(CanvasManager.chosenFigure);
                                         moveFigure(CanvasManager.chosenFigure, rightClickedCellX, rightClickedCellY);
                                     }
                                 });
@@ -340,17 +345,7 @@ function generateBattle() {
                                     // console.log(`second click - ${rightClickedCellX}, ${rightClickedCellY}`);
                                     attackFigure(cellX, cellY, rightClickedCellX, rightClickedCellY);
                                 }
-                                // changeTurn();
-
-                                // generateBattle();
                                 return;
-                            // case 'heal':
-                            //     console.log('heal is chosen');
-                            //     healFigure(CanvasManager.chosenFigure);
-                            //     // changeTurn();
-                            //     //
-                            //     // generateBattle();
-                            //     break;
                             default:
                                 break;
                         }
@@ -358,209 +353,17 @@ function generateBattle() {
                     break;
                 case 'heal':
                     console.log('heal is chosen');
+                    console.log(CanvasManager.chosenFigure);
+                    changeIsActionChosen(false);
                     healFigure(CanvasManager.chosenFigure);
                     break;
                 default:
                     break;
             }
-
-
-
-
-            // switch (CanvasManager.chosenAction) {
-            //     case 'move':
-            //         console.log('move is chosen');
-            //         changeIsActionChosen(false);
-            //         CanvasManager.drawPossibleMoves(CanvasManager.chosenFigure);
-            //         if (CanvasManager.isFigureChosen === true) {
-            //             moveFigure(CanvasManager.chosenFigure);
-            //         }
-            //         // changeTurn();
-            //
-            //         // generateBattle();
-            //         break;
-            //     case 'attack':
-            //         console.log('attack is chosen');
-            //         attackFigure(CanvasManager.chosenFigure);
-            //         // changeTurn();
-            //
-            //         // generateBattle();
-            //         break;
-            //     case 'heal':
-            //         console.log('heal is chosen');
-            //         healFigure(CanvasManager.chosenFigure);
-            //         // changeTurn();
-            //         //
-            //         // generateBattle();
-            //         break;
-            //     default:
-            //         break;
-            // }
-
-
             console.log('test');
         }
     });
 
-    // CanvasManager.canvas.addEventListener('contextmenu', function (e) {
-    //     if(CanvasManager.isFigureChosen === true){
-    //         switch (CanvasManager.chosenAction) {
-    //             case 'move':
-    //                 console.log('move is chosen');
-    //                 moveFigure(CanvasManager.chosenFigure);
-    //                 changeIsActionChosen(false);
-    //                 // changeTurn();
-    //
-    //                 // generateBattle();
-    //                 break;
-    //             case 'attack':
-    //                 console.log('attack is chosen');
-    //                 attackFigure(CanvasManager.chosenFigure);
-    //                 // changeTurn();
-    //
-    //                 // generateBattle();
-    //                 break;
-    //             case 'heal':
-    //                 console.log('heal is chosen');
-    //                 healFigure(CanvasManager.chosenFigure);
-    //                 // changeTurn();
-    //                 //
-    //                 // generateBattle();
-    //                 break;
-    //             default:
-    //                 break;
-    //         }
-    //     }
-    // });
-
-
-    // CanvasManager.canvas.addEventListener('click', function(){
-    //     if (CanvasManager.isFigureChosen === true) {
-    //         switch (CanvasManager.chosenAction) {
-    //             case 'move':
-    //                 console.log('move is chosen');
-    //                 changeIsActionChosen(false);
-    //                 if (CanvasManager.isFigureChosen === true) {
-    //                     moveFigure(CanvasManager.chosenFigure);
-    //                 }
-    //                 // changeTurn();
-    //
-    //                 // generateBattle();
-    //                 break;
-    //             case 'attack':
-    //                 console.log('attack is chosen');
-    //                 attackFigure(CanvasManager.chosenFigure);
-    //                 // changeTurn();
-    //
-    //                 // generateBattle();
-    //                 break;
-    //             case 'heal':
-    //                 console.log('heal is chosen');
-    //                 healFigure(CanvasManager.chosenFigure);
-    //                 // changeTurn();
-    //                 //
-    //                 // generateBattle();
-    //                 break;
-    //             default:
-    //                 break;
-    //         }
-    //     }
-    // });
-
-
-    // if (CanvasManager.isActionChosen === true) {
-    //     console.log('action chosen');
-    //     chooseFigure();
-    //     switch (CanvasManager.chosenAction) {
-    //         case 'move':
-    //             console.log('move is chosen');
-    //             changeIsActionChosen(false);
-    //             CanvasManager.drawPossibleMoves(CanvasManager.chosenFigure);
-    //             if (CanvasManager.isFigureChosen === true) {
-    //                 moveFigure(CanvasManager.chosenFigure);
-    //             }
-    //             // changeTurn();
-    //
-    //             // generateBattle();
-    //             break;
-    //         case 'attack':
-    //             console.log('attack is chosen');
-    //             attackFigure(CanvasManager.chosenFigure);
-    //             // changeTurn();
-    //
-    //             // generateBattle();
-    //             break;
-    //         case 'heal':
-    //             console.log('heal is chosen');
-    //             healFigure(CanvasManager.chosenFigure);
-    //             // changeTurn();
-    //             //
-    //             // generateBattle();
-    //             break;
-    //         default:
-    //             break;
-    //     }
-    // }
-
-    // console.log(CanvasManager.isActionChosen);
-
-    // if(CanvasManager.isActionChosen === true){
-    //     CanvasManager.canvas.addEventListener('click', function () {
-    //         // CanvasManager.draw();
-    //         // CanvasManager.getMouseCoordinates();
-    //         // console.log(CanvasManager.chosenAction);
-    //         // console.log(CanvasManager.getMouseCoordinates());
-    //         let cellCoordinates = CanvasManager.getClickedCell();
-    //         let cellX = cellCoordinates.x;
-    //         let cellY = cellCoordinates.y;
-    //         let figureClicked = CanvasManager.field[9 * cellY + cellX];
-    //         // console.log(figureClicked);
-    //
-    //         switch (CanvasManager.chosenAction) {
-    //             case 'move':
-    //                 console.log('move is chosen');
-    //                 moveFigure(figureClicked);
-    //                 // changeTurn();
-    //
-    //                 // generateBattle();
-    //                 break;
-    //             case 'attack':
-    //                 console.log('attack is chosen');
-    //                 attackFigure(figureClicked);
-    //                 // changeTurn();
-    //
-    //                 // generateBattle();
-    //                 break;
-    //             case 'heal':
-    //                 console.log('heal is chosen');
-    //                 healFigure(figureClicked);
-    //                 // changeTurn();
-    //                 //
-    //                 // generateBattle();
-    //                 break;
-    //             default:
-    //                 break;
-    //         }
-    //
-    //         console.log('test');
-    //         // generateBattle();
-    //
-    //         // if (CanvasManager.isFigureChosen === true) {
-    //         //     CanvasManager.draw();
-    //         //     console.log(CanvasManager.chosenFigure);
-    //         //
-    //         //     let coordinates = addFigure(CanvasManager.players[CanvasManager.turn], CanvasManager.chosenFigure);
-    //
-    //         // generateFirstStep(CanvasManager.players[CanvasManager.turn]);
-    //         //     changeIsFigureChosen(false);
-    //         // }
-    //     });
-    // }
-
-
-    // } else {
-    //     endOfGame();
-    // }
 }
 
 function chooseFigure() {
@@ -573,37 +376,6 @@ function chooseFigure() {
             console.log('x: ' + cellX + ', y: ' + cellY);
             CanvasManager.chosenFigure = CanvasManager.field[9 * cellY + cellX];
             changeIsFigureChosen(true);
-
-            // switch (CanvasManager.chosenAction) {
-            //     case 'move':
-            //         console.log('move is chosen');
-            //         changeIsActionChosen(false);
-            //         CanvasManager.drawPossibleMoves(CanvasManager.chosenFigure);
-            //         if (CanvasManager.isFigureChosen === true) {
-            //             moveFigure(CanvasManager.chosenFigure);
-            //         }
-            //         // changeTurn();
-            //
-            //         // generateBattle();
-            //         break;
-            //     case 'attack':
-            //         console.log('attack is chosen');
-            //         attackFigure(CanvasManager.chosenFigure);
-            //         // changeTurn();
-            //
-            //         // generateBattle();
-            //         break;
-            //     case 'heal':
-            //         console.log('heal is chosen');
-            //         healFigure(CanvasManager.chosenFigure);
-            //         // changeTurn();
-            //         //
-            //         // generateBattle();
-            //         break;
-            //     default:
-            //         break;
-            // }
-
             console.log('test');
         });
     }
@@ -611,18 +383,9 @@ function chooseFigure() {
 
 function moveFigure(figure, x, y) {
     if (CanvasManager.isMovementFinished === false) {
-        // CanvasManager.drawPossibleMoves(figure);
-        // if (CanvasManager.isFigureChosen === true) {
         console.log(figure);
-        // console.log('move');
         let emptyCellX = figure.x;
         let emptyCellY = figure.y;
-        // CanvasManager.canvas.addEventListener('contextmenu', function (e) {
-        //     e.stopPropagation();
-        // console.log('moveFigure event listener');
-        // let cellCoordinates = CanvasManager.getClickedCell();
-        // let cellX = cellCoordinates.x;
-        // let cellY = cellCoordinates.y;
         CanvasManager.updateField({
             type: 'figure',
             figure: figure.figure,
@@ -653,10 +416,7 @@ function moveFigure(figure, x, y) {
 
         CanvasManager.isMovementFinished = true;
         generateBattle();
-        // });
-        // }
     }
-
 }
 
 function attackFigure(attackingX, attackingY, attackedX, attackedY) {
@@ -729,27 +489,55 @@ function attackFigure(attackingX, attackingY, attackedX, attackedY) {
 }
 
 function healFigure(figure) {
-    console.log(figure);
-    console.log('heal');
-    let firstDiceResult = randomGenerator(1, 6);
-    console.log('first dice: ' + firstDiceResult);
-    figure.health = (figure.health + firstDiceResult) > figure.maxHealth ? figure.maxHealth : figure.health + firstDiceResult;
-    CanvasManager.players[CanvasManager.turn].figures.forEach(function(playerFigure){
-       if(playerFigure.id === figure.id){
-           playerFigure.health = figure.health;
-       }
-    });
+    if(CanvasManager.isHealingFinished === false) {
+        console.log(figure);
+        console.log('heal');
+        let firstDiceResult = randomGenerator(1, 6);
+        console.log('first dice: ' + firstDiceResult);
+        let newHealth = figure.health + firstDiceResult;
+        console.log(newHealth);
+        if(newHealth > figure.maxHealth){
+            figure.health = figure.maxHealth;
+        } else {
+            figure.health = newHealth;
+        }
+        // figure.health = ((figure.health + firstDiceResult) > figure.maxHealth) ? figure.maxHealth : (figure.health + firstDiceResult);
+        console.log(figure.health);
+        CanvasManager.players[CanvasManager.turn].figures.forEach(function (playerFigure) {
+            if (playerFigure.id === figure.id) {
+                playerFigure.health = newHealth;
+            }
+        });
+        console.log(CanvasManager.players[CanvasManager.turn]);
 
-    let secondDiceResult = randomGenerator(1, 6);
-    console.log('second dice: ' + secondDiceResult);
-    if(secondDiceResult % 2 === 0){
-        changeTurn();
-        CanvasManager.round++;
-        generateBattle();
-    } else {
-        generateBattle();
+        // CanvasManager.isHealingFinished = true;
+        // changeIsFigureChosen(false);
+        // changeIsActionChosen(false);
+        // CanvasManager.chosenAction = '';
+        // CanvasManager.chosenFigure = '';
+        // changeTurn();
+        // generateBattle();
+
+        let secondDiceResult = randomGenerator(1, 6);
+        console.log('second dice: ' + secondDiceResult);
+        if (secondDiceResult % 2 === 0) {
+            CanvasManager.isHealingFinished = true;
+            CanvasManager.round++;
+            changeTurn();
+            changeIsFigureChosen(false);
+            changeIsActionChosen(false);
+            CanvasManager.chosenAction = '';
+            CanvasManager.chosenFigure = '';
+            generateBattle();
+        } else {
+            CanvasManager.isHealingFinished = true;
+            changeIsFigureChosen(false);
+            // changeIsActionChosen(false);
+            CanvasManager.chosenAction = '';
+            CanvasManager.chosenFigure = '';
+            generateBattle();
+        }
     }
-
 
 
 }
