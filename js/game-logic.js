@@ -1,18 +1,26 @@
+/**
+ * Functionality for adding figures in field
+ * @param player
+ * @param figureType
+ */
 function addFigure(player, figureType) {
     // console.log(player.id);
     let figuresCount = elementCounter('figure');
     // console.log(figuresCount);
+    /** No more than 12 figures are permitted */
     if (figuresCount === 12) {
         return;
     }
     // console.log(player);
     // console.log(figureType);
+    /** New figure coordinates */
     let cellCoordinates = CanvasManager.getClickedCell();
     let cellX = cellCoordinates.x;
     let cellY = cellCoordinates.y;
 
     let cellText;
     let figure;
+    /** New figures and cell text */
     switch (figureType) {
         case 'knight':
             figure = new Knight(cellX, cellY, player.id);
@@ -32,6 +40,7 @@ function addFigure(player, figureType) {
 
     // console.log(cellX + ', ' + cellY);
 
+    /** field span depending on the player */
     let yStart, yEnd;
     if (player.id === 1) {
         yStart = 0;
@@ -42,12 +51,15 @@ function addFigure(player, figureType) {
     }
 
     // console.log(CanvasManager.field);
+    /** adding figures */
     for (let x = 0; x < 9; x++) {
         for (let y = yStart; y <= yEnd; y++) {
             if (cellX === x && cellY === y) {
                 // this.field.forEach(function (cell) {
                 // console.log(CanvasManager.field[9 * y + x]);
+                /** check if cell is empty */
                 if (CanvasManager.field[9 * y + x] === 0) {
+                    /** creating figure */
                     let currentFigure = {
                         type: 'figure',
                         figure: figureType,
@@ -61,8 +73,10 @@ function addFigure(player, figureType) {
                         speed: figure.speed,
                         id: ++figuresCount,
                     };
+                    /** field update */
                     CanvasManager.updateField(currentFigure);
 
+                    /** player update */
                     switch (figureType) {
                         case 'knight':
                             player.knights++;
@@ -80,7 +94,9 @@ function addFigure(player, figureType) {
                     player.figures.push(currentFigure);
 
                     // console.log(CanvasManager.players);
+                    /** drawing figure */
                     CanvasManager.drawFigure(player, cellText, x, y);
+                    /** changing turn */
                     changeTurn();
                 }
             }
@@ -89,6 +105,9 @@ function addFigure(player, figureType) {
     // console.log(CanvasManager.field);
 }
 
+/**
+ * Game start
+ */
 function gameStart() {
     // return new Promise(function(resolve){
     generateFirstStep(CanvasManager.players[CanvasManager.turn]);
@@ -96,6 +115,9 @@ function gameStart() {
     // generateBattle();
 }
 
+/**
+ * Function for changing turns
+ */
 function changeTurn() {
     if (CanvasManager.turn === 0) {
         CanvasManager.turn = 1;
@@ -104,14 +126,27 @@ function changeTurn() {
     }
 }
 
+/**
+ * Function for changing isFigureChosen state
+ * @param state
+ */
 function changeIsFigureChosen(state) {
     CanvasManager.isFigureChosen = state;
 }
 
+/**
+ * Function for changing isActionChosen state
+ * @param state
+ */
 function changeIsActionChosen(state) {
     CanvasManager.isActionChosen = state;
 }
 
+/**
+ * Function for counting elements on field
+ * @param typeOfElement - (obstacle/figure)
+ * @returns {number}
+ */
 function elementCounter(typeOfElement) {
     // console.log(typeOfElement);
     let elementCount = 0;
@@ -124,16 +159,29 @@ function elementCounter(typeOfElement) {
     return elementCount;
 }
 
+/**
+ * Random generator
+ * @param min - included
+ * @param max - included
+ * @returns {number}
+ */
 function randomGenerator(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min)) + min;
+    return Math.floor(min + Math.random() * (max + 1 - min));
+    // return Math.floor(Math.random() * (max - min)) + min;
 }
 
+/**
+ * Function generating game's first step - placing figures on canvas
+ * @param player
+ * @returns
+ */
 function generateFirstStep(player) {
     console.log('first step');
     // console.log(player);
     let figuresCount = elementCounter('figure');
+    /** checks if first step has finished */
     if (CanvasManager.isFirstStepFinished === false) {
         // return new Promise(function (resolve) {
         // console.log(CanvasManager.turn);
@@ -146,6 +194,7 @@ function generateFirstStep(player) {
         buttonHolder.id = `buttonHolderPlayer${CanvasManager.turn + 1}`;
         // console.log(buttonHolder);
         questionBox.appendChild(buttonHolder);
+        /** generating buttons with figures, if figure is used up no button for this figure will show */
         CanvasManager.typeOfFigures.forEach(function (type) {
             switch (type) {
                 case 'knight':
@@ -174,13 +223,16 @@ function generateFirstStep(player) {
             }
         });
         return new Promise(function (resolve) {
+            /** checks what type of figure has been clicked */
             buttonHolder.addEventListener('click', function (e) {
                 // console.log(e.target.innerText);
 
+                /** gets chosen figure type */
                 CanvasManager.chosenFigure = e.target.innerText;
                 changeIsFigureChosen(true);
                 buttonHolder.className = 'hide';
 
+                /** drawing all possible moves for selected figure */
                 CanvasManager.drawPossibleFirstMoves(CanvasManager.players[CanvasManager.turn]);
 
                 resolve(CanvasManager.canvas.addEventListener('click', function () {
@@ -188,12 +240,15 @@ function generateFirstStep(player) {
                         CanvasManager.draw();
                         // console.log(CanvasManager.chosenFigure);
 
+                        /** adding figure */
                         let coordinates = addFigure(CanvasManager.players[CanvasManager.turn], CanvasManager.chosenFigure);
 
+                        /** check if step one is finished depending on figures count */
                         let figuresCount = elementCounter('figure');
                         if (figuresCount === 12) {
                             CanvasManager.isFirstStepFinished = true;
                         }
+                        /** first step again */
                         generateFirstStep(CanvasManager.players[CanvasManager.turn]);
 
                         changeIsFigureChosen(false);
@@ -205,6 +260,7 @@ function generateFirstStep(player) {
         // console.log(CanvasManager.isFigureChosen);
 
     } else {
+        /** if step one has finished generate step two - battle */
         generateBattle();
     }
     // resolve(generateBattle());
@@ -212,7 +268,9 @@ function generateFirstStep(player) {
 
 }
 
-
+/**
+ * Function generating game's second step - battle between players
+ */
 function generateBattle() {
     CanvasManager.isMovementFinished = false;
     CanvasManager.isAttackFinished = false;
@@ -224,16 +282,34 @@ function generateBattle() {
     console.log(CanvasManager.field);
     // if (CanvasManager.players[0].numberOfFigures > 0 || CanvasManager.players[1].numberOfFigures > 0) {
     console.log(CanvasManager.turn);
-    let questionBox = document.querySelector(`#questionBoxPlayer${CanvasManager.turn + 1}`);
+    let activePlayer = null;
+    let unactivePlayer = null;
+    /** check which player's turn is */
+    if (CanvasManager.turn === 0) {
+        activePlayer = CanvasManager.players[1];
+        unactivePlayer = CanvasManager.players[0];
+    } else if (CanvasManager.turn === 1) {
+        activePlayer = CanvasManager.players[0];
+        unactivePlayer = CanvasManager.players[1];
+    }
+    let questionBoxActive = document.querySelector(`#questionBoxPlayer${activePlayer.id}`);
     // console.log(questionBox);
-    questionBox.innerHTML = `<p>${CanvasManager.players[CanvasManager.turn].name}</p>`;
-    questionBox.innerHTML += `<p>Points: ${CanvasManager.players[CanvasManager.turn].points}</p>`;
-    questionBox.innerHTML += `<p>Choose action:</p>`;
+    questionBoxActive.innerHTML = `<p>${activePlayer.name}</p>`;
+    questionBoxActive.innerHTML += `<p>Points: ${activePlayer.points}</p>`;
+    questionBoxActive.innerHTML += `<p>Choose action:</p>`;
+
+    let questionBoxUnactive = document.querySelector(`#questionBoxPlayer${unactivePlayer.id}`);
+    // console.log(questionBox);
+    questionBoxUnactive.innerHTML = `<p>${unactivePlayer.name}</p>`;
+    questionBoxUnactive.innerHTML += `<p>Points: ${unactivePlayer.points}</p>`;
+    // questionBoxActive.innerHTML += `<p>Choose action:</p>`;
 
     let buttonHolder = document.createElement('div');
     buttonHolder.id = `buttonHolderPlayer${CanvasManager.turn + 1}`;
     // console.log(buttonHolder);
-    questionBox.appendChild(buttonHolder);
+    questionBoxActive.appendChild(buttonHolder);
+
+    /** generating buttons for actions */
     CanvasManager.typeOfActions.forEach(function (type) {
         let button = document.createElement('button');
         button.appendChild(document.createTextNode(type));
@@ -284,6 +360,7 @@ function generateBattle() {
 
     });
 
+    /** choose figure */
     CanvasManager.canvas.addEventListener('click', function (e) {
         // console.log(CanvasManager.players[CanvasManager.turn]);
         console.log('choose event listener');
@@ -299,6 +376,7 @@ function generateBattle() {
         console.log(CanvasManager.isActionChosen);
         console.log(CanvasManager.chosenAction);
         console.log(checkIfFigureBelongsToPlayer(cellX, cellY, CanvasManager.players[CanvasManager.turn]));
+        /** check if action is chosen and if figure chosen is in possesion of the active player */
         if (CanvasManager.isActionChosen === true &&
             checkIfFigureBelongsToPlayer(cellX, cellY, CanvasManager.players[CanvasManager.turn]) === true
 
@@ -307,13 +385,18 @@ function generateBattle() {
             CanvasManager.chosenFigure = CanvasManager.field[9 * cellY + cellX];
             console.log(CanvasManager.chosenFigure);
             changeIsFigureChosen(true);
+
+            /** if action is 'move' show possible moves */
             if (CanvasManager.chosenAction === 'move') {
                 let possibleMoves = CanvasManager.drawPossibleMoves(CanvasManager.chosenFigure);
             }
 
-            switch(CanvasManager.chosenAction){
+            switch (CanvasManager.chosenAction) {
                 case 'move':
                 case 'attack':
+                    /** if 'move' action, right click on field, chosen figure goes to the field
+                     *  if 'attack' action, right click on another figure, then first figure attacks the second one
+                     **/
                     CanvasManager.canvas.addEventListener('contextmenu', function (e) {
                         e.preventDefault();
                         let cellCoordinates = CanvasManager.getClickedCell();
@@ -321,12 +404,15 @@ function generateBattle() {
                         let rightClickedCellY = cellCoordinates.y;
                         switch (CanvasManager.chosenAction) {
                             case 'move':
+                                /** gets possible positions */
                                 let possiblePositions = getPossiblePositions(CanvasManager.chosenFigure);
                                 possiblePositions.forEach(function (possiblePosition) {
+                                    /** move only permitted when field is in possible positions */
                                     if (possiblePosition.x === rightClickedCellX && possiblePosition.y === rightClickedCellY) {
                                         console.log('move is chosen');
                                         changeIsActionChosen(false);
                                         console.log(CanvasManager.chosenFigure);
+                                        /** triggers figure movement */
                                         moveFigure(CanvasManager.chosenFigure, rightClickedCellX, rightClickedCellY);
                                     }
                                 });
@@ -343,6 +429,7 @@ function generateBattle() {
                                     changeIsActionChosen(false);
                                     // console.log(`first click - ${cellX}, ${cellY}`);
                                     // console.log(`second click - ${rightClickedCellX}, ${rightClickedCellY}`);
+                                    /** triggers attack */
                                     attackFigure(cellX, cellY, rightClickedCellX, rightClickedCellY);
                                 }
                                 return;
@@ -355,6 +442,7 @@ function generateBattle() {
                     console.log('heal is chosen');
                     console.log(CanvasManager.chosenFigure);
                     changeIsActionChosen(false);
+                    /** triggers healing functionality */
                     healFigure(CanvasManager.chosenFigure);
                     break;
                 default:
@@ -381,11 +469,19 @@ function chooseFigure() {
     }
 }
 
+/**
+ * Function for moving figures
+ * @param figure
+ * @param x
+ * @param y
+ */
 function moveFigure(figure, x, y) {
+    /** check if no other movements running */
     if (CanvasManager.isMovementFinished === false) {
         console.log(figure);
         let emptyCellX = figure.x;
         let emptyCellY = figure.y;
+        /** update field with new coordinates */
         CanvasManager.updateField({
             type: 'figure',
             figure: figure.figure,
@@ -399,15 +495,19 @@ function moveFigure(figure, x, y) {
             speed: figure.speed,
             id: figure.id,
         });
+        /** update player with new coordinates */
         CanvasManager.players[CanvasManager.turn].figures.forEach(function (playerFigure) {
             if (playerFigure.x === figure.x && playerFigure.y === figure.y) {
                 playerFigure.x = x;
                 playerFigure.y = y;
             }
         });
+        /** empty old cell */
         CanvasManager.emptyCell(emptyCellX, emptyCellY);
         console.log(CanvasManager.field);
+        /** redraw updated canvas */
         CanvasManager.draw();
+        /** change turn */
         changeTurn();
         changeIsFigureChosen(false);
         changeIsActionChosen(false);
@@ -415,24 +515,39 @@ function moveFigure(figure, x, y) {
         CanvasManager.chosenFigure = '';
 
         CanvasManager.isMovementFinished = true;
+        /** generate new battle */
         generateBattle();
     }
 }
 
+/**
+ * Attack functionality
+ * @param attackingX
+ * @param attackingY
+ * @param attackedX
+ * @param attackedY
+ */
 function attackFigure(attackingX, attackingY, attackedX, attackedY) {
+    /** check if no other attacks are running */
     if (CanvasManager.isAttackFinished === false) {
         console.log('attack figure');
+        /** gets attacking and attacked figures by their coordinates */
         let attackingFigure = getFigureByCoordinates(attackingX, attackingY);
         let attackedFigure = getFigureByCoordinates(attackedX, attackedY);
+        /** check if attack is possible */
         if (checkIfAttackIsPossible(attackingX, attackingY, attackedX, attackedY) === true) {
+            /** chack what object is being attacked */
             switch (attackedFigure.type) {
+                /** if obstacle is being attack it is destroyed and stop existing on field */
                 case 'obstacle':
                     CanvasManager.emptyCell(attackedX, attackedY);
                     CanvasManager.draw();
                     break;
+                /** if figure is being attacked it checks the state of the attack */
                 case 'figure':
                     let questionBox = document.querySelector(`#questionBoxPlayer${CanvasManager.turn + 1}`);
                     questionBox.innerHTML += `<p>Attack possible</p>`;
+                    /** generating attack state (unsuccessful/half successful/successful) */
                     let attackState = generateDiceSituation(attackedFigure);
 
                     switch (attackState) {
@@ -443,11 +558,13 @@ function attackFigure(attackingX, attackingY, attackedX, attackedY) {
                         /** half successful attack */
                         case 1:
                             questionBox.innerHTML += `<p>Attack half successful</p>`;
+                            /** generating points */
                             generatePoints(attackingFigure, attackedFigure, 1);
                             break;
                         /** successful attack */
                         case 2:
                             questionBox.innerHTML += `<p>Attack successful</p>`;
+                            /** generating points */
                             generatePoints(attackingFigure, attackedFigure, 2);
                             break;
                         default:
@@ -464,23 +581,27 @@ function attackFigure(attackingX, attackingY, attackedX, attackedY) {
                 CanvasManager.chosenAction = '';
                 CanvasManager.chosenFigure = '';
                 console.log('attack finished');
+                /** change turn */
                 changeTurn();
+                /** increase round */
                 CanvasManager.round++;
+                /** generate battle */
                 generateBattle();
             }, 2000);
-
-
         } else {
+            /** if attack is not possible */
             let questionBox = document.querySelector(`#questionBoxPlayer${CanvasManager.turn + 1}`);
             // console.log(questionBox);
             questionBox.innerHTML += `<p>Attack not possible</p>`;
             CanvasManager.isAttackFinished = true;
             setTimeout(function () {
+                questionBox.innerHTML += '';
                 changeIsFigureChosen(false);
                 changeIsActionChosen(false);
                 CanvasManager.chosenAction = '';
                 CanvasManager.chosenFigure = '';
                 console.log('attack finished');
+                /** generate battle without changing the turn */
                 generateBattle();
             }, 2000);
         }
@@ -488,15 +609,22 @@ function attackFigure(attackingX, attackingY, attackedX, attackedY) {
     }
 }
 
+/**
+ * Function for healing figures
+ * @param figure
+ */
 function healFigure(figure) {
-    if(CanvasManager.isHealingFinished === false) {
+    /** check if no other healing are running */
+    if (CanvasManager.isHealingFinished === false) {
         console.log(figure);
         console.log('heal');
+        /** generate first dice result */
         let firstDiceResult = randomGenerator(1, 6);
         console.log('first dice: ' + firstDiceResult);
+        /** update health */
         let newHealth = figure.health + firstDiceResult;
         console.log(newHealth);
-        if(newHealth > figure.maxHealth){
+        if (newHealth > figure.maxHealth) {
             figure.health = figure.maxHealth;
         } else {
             figure.health = newHealth;
@@ -518,34 +646,46 @@ function healFigure(figure) {
         // changeTurn();
         // generateBattle();
 
+        /** generate second dice result, responsible for player receiving bonus turn */
         let secondDiceResult = randomGenerator(1, 6);
         console.log('second dice: ' + secondDiceResult);
+        /** if result is even, no bonus turn */
         if (secondDiceResult % 2 === 0) {
             CanvasManager.isHealingFinished = true;
+            /** increase round */
             CanvasManager.round++;
+            /** change turn */
             changeTurn();
             changeIsFigureChosen(false);
             changeIsActionChosen(false);
             CanvasManager.chosenAction = '';
             CanvasManager.chosenFigure = '';
+            /** generate battle */
             generateBattle();
         } else {
+            /** if result is odd, player wins bonus turn */
             CanvasManager.isHealingFinished = true;
             changeIsFigureChosen(false);
             // changeIsActionChosen(false);
             CanvasManager.chosenAction = '';
             CanvasManager.chosenFigure = '';
+            /** generate battle without changing the turn */
             generateBattle();
         }
     }
-
-
 }
+
 
 function endOfGame() {
     console.log('end');
 }
 
+/**
+ * Function for getting player from its coordinates
+ * @param x
+ * @param y
+ * @returns {object} - figure
+ */
 function getFigureByCoordinates(x, y) {
     let figure = {};
     CanvasManager.field.forEach(function (cell) {
@@ -556,10 +696,21 @@ function getFigureByCoordinates(x, y) {
     return figure;
 }
 
+/**
+ * Function that checks if cell is empty
+ * @param x
+ * @param y
+ * @returns {boolean}
+ */
 function checkIfPositionIsEmpty(x, y) {
     return CanvasManager.field[9 * y + x] === 0;
 }
 
+/**
+ * Function for getting possible positions for figure
+ * @param figure
+ * @returns {Array}
+ */
 function getPossiblePositions(figure) {
     let possiblePositions = [];
     switch (figure.figure) {
@@ -717,6 +868,13 @@ function getPossiblePositions(figure) {
     return possiblePositions;
 }
 
+/**
+ * Function for checking if figure belongs to player
+ * @param x
+ * @param y
+ * @param player
+ * @returns {boolean}
+ */
 function checkIfFigureBelongsToPlayer(x, y, player) {
     let result = false;
     player.figures.forEach(function (figure) {
@@ -728,45 +886,62 @@ function checkIfFigureBelongsToPlayer(x, y, player) {
     return result;
 }
 
+/**
+ * Function for checking if attack is possible depending of attacking figures attack span
+ * @param attackingX
+ * @param attackingY
+ * @param attackedX
+ * @param attackedY
+ * @returns {boolean}
+ */
 function checkIfAttackIsPossible(attackingX, attackingY, attackedX, attackedY) {
-    let posibility = false;
+    let possibility = false;
+    /** gets attacking and attacked figure by their coordinates */
     let attackingFigure = getFigureByCoordinates(attackingX, attackingY);
     let attackedFigure = getFigureByCoordinates(attackedX, attackedY);
     switch (attackingFigure.figure) {
         case 'knight':
         case 'elf':
+            /** no check for obstacles as knights have attack span equal to 1 and elves can attack through obstacles */
             if (Math.abs(attackingX - attackedX) === attackingFigure.attackSpan ||
                 Math.abs(attackingY - attackedY) === attackingFigure.attackSpan
             ) {
-                posibility = true;
+                possibility = true;
             }
             break;
         case 'dwarf':
+            /** check for attack span*/
             if (Math.abs(attackingX - attackedX) === attackingFigure.attackSpan) {
                 if (CanvasManager.field[attackingY * 9 + (attackingX + attackedX) / 2] === 0) {
-                    posibility = true;
+                    possibility = true;
                 }
             }
+            /** check for obstacles on the way */
             if (Math.abs(attackingY - attackedY) === attackingFigure.attackSpan) {
                 if (CanvasManager.field[((attackingY + attackedY) / 2) * 9 + attackingX] === 0) {
-                    posibility = true;
+                    possibility = true;
                 }
             }
             break;
-        // case 'elf':
-        //     break;
         default:
             break;
     }
-    return posibility;
+    return possibility;
 }
 
+/**
+ * Function for calculating attack's state depending on dice result
+ * @param attackedFigure
+ * @returns {number}
+ */
 function generateDiceSituation(attackedFigure) {
     let battleState = 0;
     let diceSum = 0;
+    /** generates three dice results and gets their sum */
     for (let i = 0; i < 3; i++) {
         diceSum = randomGenerator(1, 6);
     }
+    /** check conditions */
     if (diceSum === attackedFigure.health) {
         battleState = 0;
     } else if (diceSum === 3) {
@@ -778,6 +953,12 @@ function generateDiceSituation(attackedFigure) {
     return battleState;
 }
 
+/**
+ * Function for generating points to attacking player and getting health from attacked player's figure
+ * @param attackingFigure
+ * @param attackedFigure
+ * @param state
+ */
 function generatePoints(attackingFigure, attackedFigure, state) {
     let wreck = 0;
 
@@ -789,12 +970,15 @@ function generatePoints(attackingFigure, attackedFigure, state) {
         losingPlayer = CanvasManager.players[0];
     }
 
+    /** figure health update */
     switch (state) {
+        /** half success*/
         case 1:
             wreck = attackingFigure.attack - attackedFigure.armour;
             attackedFigure.health = attackedFigure.health - (wreck / 2);
             CanvasManager.players[CanvasManager.turn].points += (wreck / 2);
             break;
+        /** full success */
         case 2:
             wreck = attackingFigure.attack - attackedFigure.armour;
             attackedFigure.health = attackedFigure.health - wreck;
@@ -804,8 +988,9 @@ function generatePoints(attackingFigure, attackedFigure, state) {
             break;
     }
 
-    losingPlayer.figures.forEach(function(playerFigure){
-        if(playerFigure.id === attackedFigure.id){
+    /** player's figure health update */
+    losingPlayer.figures.forEach(function (playerFigure) {
+        if (playerFigure.id === attackedFigure.id) {
             playerFigure.health = attackedFigure.health;
         }
     });

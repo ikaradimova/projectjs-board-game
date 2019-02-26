@@ -208,6 +208,11 @@ CanvasManager.draw = function () {
     CanvasManager.drawFigures();
 };
 
+/**
+ * Function for getting mouse coordinates when click
+ * @param event
+ * @returns {{x: number, y: number}}
+ */
 CanvasManager.getMouseCoordinates = function (event) {
     let totalOffsetX = 0;
     let totalOffsetY = 0;
@@ -228,6 +233,10 @@ CanvasManager.getMouseCoordinates = function (event) {
 };
 HTMLCanvasElement.prototype.getMouseCoordinates = CanvasManager.getMouseCoordinates;
 
+/**
+ * Function for getting canvas coordinates
+ * @returns {{x: number, y: number}}
+ */
 CanvasManager.getClickedCell = function () {
     let coordinates = CanvasManager.getMouseCoordinates(event);
     let canvasX = coordinates.x;
@@ -237,6 +246,13 @@ CanvasManager.getClickedCell = function () {
     return {x: cellX, y: cellY}
 };
 
+/**
+ * Function for drawing new figures
+ * @param player
+ * @param cellText
+ * @param x
+ * @param y
+ */
 CanvasManager.drawFigure = function (player, cellText, x, y) {
     this.context.moveTo(0, (this.tileHeight * y) - 0.5);
     this.context.lineTo(450, (this.tileHeight * y) - 0.5);
@@ -261,7 +277,12 @@ CanvasManager.drawFigure = function (player, cellText, x, y) {
     }
 };
 
+/**
+ * Function for drawing each players' first moves
+ * @param player
+ */
 CanvasManager.drawPossibleFirstMoves = function (player) {
+    /** Getting in which part of field is each player */
     let yStart, yEnd;
     if (player.id === 1) {
         yStart = 0;
@@ -292,10 +313,16 @@ CanvasManager.drawPossibleFirstMoves = function (player) {
     }
 };
 
+/**
+ * Function for drawing possible moves after first step has finished
+ * @param figure
+ */
 CanvasManager.drawPossibleMoves = function (figure) {
+    /** Get possible positions for figure */
     let possiblePositions = getPossiblePositions(figure);
-    possiblePositions.forEach(function (position) {
 
+    /** drawing possible positions */
+    possiblePositions.forEach(function (position) {
         CanvasManager.context.moveTo(0, (CanvasManager.tileHeight * position.y) - 0.5);
         CanvasManager.context.lineTo(450, (CanvasManager.tileHeight * position.y) - 0.5);
         CanvasManager.context.stroke();
