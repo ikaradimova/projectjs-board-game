@@ -1,5 +1,6 @@
 #canvas{
     border:1px solid #000000;
+    float: left;
 }
 
 body{
@@ -7,10 +8,30 @@ body{
 }
 
 #questionBoxPlayer1, #questionBoxPlayer2{
-    width: 1000px;
+    width: 200px;
     height: 150px;
+    float: left;
 }
 
 .hide{
     display: none;
+}
+
+#game{
+    width: 100%;
+    position: absolute;
+}
+
+#gameEnd{
+    top: 400px;
+    position: relative;
+}
+
+#infoBox{
+    top: 330px;
+    position: relative;
+}
+
+#notice{
+    color: red;
 }

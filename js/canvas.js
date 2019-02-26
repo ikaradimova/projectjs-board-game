@@ -67,7 +67,6 @@ CanvasManager.generateObstacles = function () {
 
     /** getting number of obstacles in field */
     let obstaclesCount = elementCounter('obstacle');
-    console.log(numberOfObstacles);
     let x, y;
     for (let i = 1; i <= numberOfObstacles; i++) {
         x = randomGenerator(0, 8);
@@ -83,7 +82,6 @@ CanvasManager.generateObstacles = function () {
         }
         CanvasManager.updateField({type: 'obstacle', x: x, y: y});
     }
-    console.log(CanvasManager.field);
 };
 
 /**

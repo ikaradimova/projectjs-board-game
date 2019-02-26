@@ -7,14 +7,47 @@
 
 </head>
 <body>
-<canvas id="canvas" width="450" height="350">
-</canvas>
-<div id="questionBoxPlayer1">
-    <p>Player 1</p>
+<div id="game">
+    <canvas id="canvas" width="450" height="350">
+    </canvas>
+    <div id="questionBoxPlayer1">
+        <p>Player 1</p>
+    </div>
+    <div id="questionBoxPlayer2">
+        <p>Player 2</p>
+    </div>
 </div>
-<div id="questionBoxPlayer2">
-    <p>Player 2</p>
+
+<div id="gameEnd">
+    <div id="endOfGameMessage" class="hide">Game over</div>
+    <button id="startNewGame" class="hide">Start new game</button>
 </div>
+<div id="infoBox">
+    <h2>Important:</h2>
+    <p>Rules:</p>
+    <ul>
+        <li>
+            First step: Each player pulls out one figure at a time.
+        </li>
+        <li>
+            Second step: Battle begins. Please note that if you want to move a figure, first click on the button 'move',
+            than choose your figure by <strong>left clicking</strong> on it and in green it will show all possible
+            positions for the figure, then <strong>right click</strong> the cell you want to put your figure in.
+            If you want to attack your opponent's figure, first click on 'attack' <strong>left click</strong> on the
+            figure you want to attack with and then <strong>right click</strong> on the figure you want to attack.
+            Finally, if you want to heal a figure, use button 'heal' and then just left click on it. In a random way
+            this may give you a bonus turn.
+            Use it wisely.
+        </li>
+        <li>Third step: Have fun.</li>
+    </ul>
+    <p id="notice">
+        Warning: Programmer apologizes if the game becomes too slow. Be patient and wait for it to finish its inside
+        processing. If you use it correctly, it will be kind enough to work properly. Please treat it in the way you
+        treat the people you love. This would be highly appreciated.
+    </p>
+</div>
+
 <script type="text/javascript" src="js/main.js"></script>
 <script type="text/javascript" src="js/canvas.js"></script>
 <script type="text/javascript" src="js/Dwarf.js"></script>

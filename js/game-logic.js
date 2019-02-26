@@ -4,15 +4,11 @@
  * @param figureType
  */
 function addFigure(player, figureType) {
-    // console.log(player.id);
     let figuresCount = elementCounter('figure');
-    // console.log(figuresCount);
     /** No more than 12 figures are permitted */
     if (figuresCount === 12) {
         return;
     }
-    // console.log(player);
-    // console.log(figureType);
     /** New figure coordinates */
     let cellCoordinates = CanvasManager.getClickedCell();
     let cellX = cellCoordinates.x;
@@ -38,8 +34,6 @@ function addFigure(player, figureType) {
             break;
     }
 
-    // console.log(cellX + ', ' + cellY);
-
     /** field span depending on the player */
     let yStart, yEnd;
     if (player.id === 1) {
@@ -50,13 +44,10 @@ function addFigure(player, figureType) {
         yEnd = 6
     }
 
-    // console.log(CanvasManager.field);
     /** adding figures */
     for (let x = 0; x < 9; x++) {
         for (let y = yStart; y <= yEnd; y++) {
             if (cellX === x && cellY === y) {
-                // this.field.forEach(function (cell) {
-                // console.log(CanvasManager.field[9 * y + x]);
                 /** check if cell is empty */
                 if (CanvasManager.field[9 * y + x] === 0) {
                     /** creating figure */
@@ -93,7 +84,6 @@ function addFigure(player, figureType) {
                     player.numberOfFigures++;
                     player.figures.push(currentFigure);
 
-                    // console.log(CanvasManager.players);
                     /** drawing figure */
                     CanvasManager.drawFigure(player, cellText, x, y);
                     /** changing turn */
@@ -102,17 +92,13 @@ function addFigure(player, figureType) {
             }
         }
     }
-    // console.log(CanvasManager.field);
 }
 
 /**
  * Game start
  */
 function gameStart() {
-    // return new Promise(function(resolve){
     generateFirstStep(CanvasManager.players[CanvasManager.turn]);
-    // });
-    // generateBattle();
 }
 
 /**
@@ -148,11 +134,9 @@ function changeIsActionChosen(state) {
  * @returns {number}
  */
 function elementCounter(typeOfElement) {
-    // console.log(typeOfElement);
     let elementCount = 0;
     CanvasManager.field.forEach(function (cell) {
         if (cell.type === typeOfElement) {
-            // console.log(cell.type);
             elementCount++;
         }
     });
@@ -169,7 +153,6 @@ function randomGenerator(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(min + Math.random() * (max + 1 - min));
-    // return Math.floor(Math.random() * (max - min)) + min;
 }
 
 /**
@@ -178,21 +161,15 @@ function randomGenerator(min, max) {
  * @returns
  */
 function generateFirstStep(player) {
-    console.log('first step');
-    // console.log(player);
     let figuresCount = elementCounter('figure');
     /** checks if first step has finished */
     if (CanvasManager.isFirstStepFinished === false) {
-        // return new Promise(function (resolve) {
-        // console.log(CanvasManager.turn);
         let questionBox = document.querySelector(`#questionBoxPlayer${CanvasManager.turn + 1}`);
-        // console.log(questionBox);
         questionBox.innerHTML = `<p>${CanvasManager.players[CanvasManager.turn].name}</p>`;
         questionBox.innerHTML += `<p>Choose figure:</p>`;
 
         let buttonHolder = document.createElement('div');
         buttonHolder.id = `buttonHolderPlayer${CanvasManager.turn + 1}`;
-        // console.log(buttonHolder);
         questionBox.appendChild(buttonHolder);
         /** generating buttons with figures, if figure is used up no button for this figure will show */
         CanvasManager.typeOfFigures.forEach(function (type) {
@@ -225,7 +202,6 @@ function generateFirstStep(player) {
         return new Promise(function (resolve) {
             /** checks what type of figure has been clicked */
             buttonHolder.addEventListener('click', function (e) {
-                // console.log(e.target.innerText);
 
                 /** gets chosen figure type */
                 CanvasManager.chosenFigure = e.target.innerText;
@@ -238,7 +214,6 @@ function generateFirstStep(player) {
                 resolve(CanvasManager.canvas.addEventListener('click', function () {
                     if (CanvasManager.isFigureChosen === true) {
                         CanvasManager.draw();
-                        // console.log(CanvasManager.chosenFigure);
 
                         /** adding figure */
                         let coordinates = addFigure(CanvasManager.players[CanvasManager.turn], CanvasManager.chosenFigure);
@@ -257,15 +232,10 @@ function generateFirstStep(player) {
             });
         })
 
-        // console.log(CanvasManager.isFigureChosen);
-
     } else {
         /** if step one has finished generate step two - battle */
         generateBattle();
     }
-    // resolve(generateBattle());
-    // })
-
 }
 
 /**
@@ -276,196 +246,112 @@ function generateBattle() {
     CanvasManager.isAttackFinished = false;
     CanvasManager.isHealingFinished = false;
 
-    console.log('battle');
-    console.log('round: ' + CanvasManager.round);
-    console.log(CanvasManager.players);
-    console.log(CanvasManager.field);
-    // if (CanvasManager.players[0].numberOfFigures > 0 || CanvasManager.players[1].numberOfFigures > 0) {
-    console.log(CanvasManager.turn);
     let activePlayer = null;
-    let unactivePlayer = null;
+    let inactivePlayer = null;
     /** check which player's turn is */
     if (CanvasManager.turn === 0) {
-        activePlayer = CanvasManager.players[1];
-        unactivePlayer = CanvasManager.players[0];
-    } else if (CanvasManager.turn === 1) {
         activePlayer = CanvasManager.players[0];
-        unactivePlayer = CanvasManager.players[1];
+        inactivePlayer = CanvasManager.players[1];
+    } else if (CanvasManager.turn === 1) {
+        activePlayer = CanvasManager.players[1];
+        inactivePlayer = CanvasManager.players[0];
     }
-    let questionBoxActive = document.querySelector(`#questionBoxPlayer${activePlayer.id}`);
-    // console.log(questionBox);
-    questionBoxActive.innerHTML = `<p>${activePlayer.name}</p>`;
-    questionBoxActive.innerHTML += `<p>Points: ${activePlayer.points}</p>`;
-    questionBoxActive.innerHTML += `<p>Choose action:</p>`;
+    if (activePlayer.figures.length !== 0) {
+        let questionBoxActive = document.querySelector(`#questionBoxPlayer${activePlayer.id}`);
+        questionBoxActive.innerHTML = `<p>${activePlayer.name}</p>`;
+        questionBoxActive.innerHTML += `<p>Points: ${activePlayer.points}</p>`;
+        questionBoxActive.innerHTML += `<p>Choose action:</p>`;
 
-    let questionBoxUnactive = document.querySelector(`#questionBoxPlayer${unactivePlayer.id}`);
-    // console.log(questionBox);
-    questionBoxUnactive.innerHTML = `<p>${unactivePlayer.name}</p>`;
-    questionBoxUnactive.innerHTML += `<p>Points: ${unactivePlayer.points}</p>`;
-    // questionBoxActive.innerHTML += `<p>Choose action:</p>`;
+        let questionBoxInactive = document.querySelector(`#questionBoxPlayer${inactivePlayer.id}`);
+        questionBoxInactive.innerHTML = `<p>${inactivePlayer.name}</p>`;
+        questionBoxInactive.innerHTML += `<p>Points: ${inactivePlayer.points}</p>`;
 
-    let buttonHolder = document.createElement('div');
-    buttonHolder.id = `buttonHolderPlayer${CanvasManager.turn + 1}`;
-    // console.log(buttonHolder);
-    questionBoxActive.appendChild(buttonHolder);
+        let buttonHolder = document.createElement('div');
+        buttonHolder.id = `buttonHolderPlayer${CanvasManager.turn + 1}`;
+        questionBoxActive.appendChild(buttonHolder);
 
-    /** generating buttons for actions */
-    CanvasManager.typeOfActions.forEach(function (type) {
-        let button = document.createElement('button');
-        button.appendChild(document.createTextNode(type));
-        buttonHolder.appendChild(button);
-    });
+        /** generating buttons for actions */
+        CanvasManager.typeOfActions.forEach(function (type) {
+            let button = document.createElement('button');
+            button.appendChild(document.createTextNode(type));
+            buttonHolder.appendChild(button);
+        });
 
-    console.log('before button click');
-    /** choose action */
-    buttonHolder.addEventListener('click', function (e) {
-        // console.log(e.target.innerText);
+        /** choose action */
+        buttonHolder.addEventListener('click', function (e) {
 
-        CanvasManager.chosenAction = e.target.innerText;
-        // console.log(CanvasManager.chosenAction);
-        changeIsActionChosen(true);
-        console.log(CanvasManager.isActionChosen);
-        console.log(CanvasManager.chosenAction);
-        buttonHolder.className = 'hide';
-        // switch (CanvasManager.chosenAction) {
-        //     case 'move':
-        //         console.log('move is chosen');
-        //         moveFigure(figureClicked);
-        //         // changeTurn();
-        //
-        //         // generateBattle();
-        //         break;
-        //     case 'attack':
-        //         console.log('attack is chosen');
-        //         attackFigure(figureClicked);
-        //         // changeTurn();
-        //
-        //         // generateBattle();
-        //         break;
-        //     case 'heal':
-        //         console.log('heal is chosen');
-        //         healFigure(figureClicked);
-        //         // changeTurn();
-        //         //
-        //         // generateBattle();
-        //         break;
-        //     default:
-        //         break;
-        // }
-        // }
-        // CanvasManager.drawPossibleFirstMoves(CanvasManager.players[CanvasManager.turn]);
+            CanvasManager.chosenAction = e.target.innerText;
+            changeIsActionChosen(true);
+            buttonHolder.className = 'hide';
+        });
 
-        console.log('before figure click');
-
-
-    });
-
-    /** choose figure */
-    CanvasManager.canvas.addEventListener('click', function (e) {
-        // console.log(CanvasManager.players[CanvasManager.turn]);
-        console.log('choose event listener');
-        let cellCoordinates = CanvasManager.getClickedCell();
-        let cellX = cellCoordinates.x;
-        let cellY = cellCoordinates.y;
-        console.log(`${cellX}, ${cellY}`);
-        // console.log(cellX);
-        // console.log(cellY);
-        // console.log(CanvasManager.players[CanvasManager.turn]);
-        // console.log(checkIfFigureBelongsToPlayer(cellX, cellY, CanvasManager.players[CanvasManager.turn]));
-
-        console.log(CanvasManager.isActionChosen);
-        console.log(CanvasManager.chosenAction);
-        console.log(checkIfFigureBelongsToPlayer(cellX, cellY, CanvasManager.players[CanvasManager.turn]));
-        /** check if action is chosen and if figure chosen is in possesion of the active player */
-        if (CanvasManager.isActionChosen === true &&
-            checkIfFigureBelongsToPlayer(cellX, cellY, CanvasManager.players[CanvasManager.turn]) === true
-
-        ) {
-            console.log('x: ' + cellX + ', y: ' + cellY);
-            CanvasManager.chosenFigure = CanvasManager.field[9 * cellY + cellX];
-            console.log(CanvasManager.chosenFigure);
-            changeIsFigureChosen(true);
-
-            /** if action is 'move' show possible moves */
-            if (CanvasManager.chosenAction === 'move') {
-                let possibleMoves = CanvasManager.drawPossibleMoves(CanvasManager.chosenFigure);
-            }
-
-            switch (CanvasManager.chosenAction) {
-                case 'move':
-                case 'attack':
-                    /** if 'move' action, right click on field, chosen figure goes to the field
-                     *  if 'attack' action, right click on another figure, then first figure attacks the second one
-                     **/
-                    CanvasManager.canvas.addEventListener('contextmenu', function (e) {
-                        e.preventDefault();
-                        let cellCoordinates = CanvasManager.getClickedCell();
-                        let rightClickedCellX = cellCoordinates.x;
-                        let rightClickedCellY = cellCoordinates.y;
-                        switch (CanvasManager.chosenAction) {
-                            case 'move':
-                                /** gets possible positions */
-                                let possiblePositions = getPossiblePositions(CanvasManager.chosenFigure);
-                                possiblePositions.forEach(function (possiblePosition) {
-                                    /** move only permitted when field is in possible positions */
-                                    if (possiblePosition.x === rightClickedCellX && possiblePosition.y === rightClickedCellY) {
-                                        console.log('move is chosen');
-                                        changeIsActionChosen(false);
-                                        console.log(CanvasManager.chosenFigure);
-                                        /** triggers figure movement */
-                                        moveFigure(CanvasManager.chosenFigure, rightClickedCellX, rightClickedCellY);
-                                    }
-                                });
-
-
-                                // changeTurn();
-
-                                // generateBattle();
-                                return;
-                            // break;
-                            case 'attack':
-                                if (CanvasManager.chosenFigure.x === cellX && CanvasManager.chosenFigure.y === cellY) {
-                                    console.log('attack is chosen');
-                                    changeIsActionChosen(false);
-                                    // console.log(`first click - ${cellX}, ${cellY}`);
-                                    // console.log(`second click - ${rightClickedCellX}, ${rightClickedCellY}`);
-                                    /** triggers attack */
-                                    attackFigure(cellX, cellY, rightClickedCellX, rightClickedCellY);
-                                }
-                                return;
-                            default:
-                                break;
-                        }
-                    });
-                    break;
-                case 'heal':
-                    console.log('heal is chosen');
-                    console.log(CanvasManager.chosenFigure);
-                    changeIsActionChosen(false);
-                    /** triggers healing functionality */
-                    healFigure(CanvasManager.chosenFigure);
-                    break;
-                default:
-                    break;
-            }
-            console.log('test');
-        }
-    });
-
-}
-
-function chooseFigure() {
-    if (CanvasManager.isActionChosen === true) {
-        CanvasManager.canvas.addEventListener('click', function () {
-            console.log('chooseFigure event listener');
+        /** choose figure */
+        CanvasManager.canvas.addEventListener('click', function (e) {
             let cellCoordinates = CanvasManager.getClickedCell();
             let cellX = cellCoordinates.x;
             let cellY = cellCoordinates.y;
-            console.log('x: ' + cellX + ', y: ' + cellY);
-            CanvasManager.chosenFigure = CanvasManager.field[9 * cellY + cellX];
-            changeIsFigureChosen(true);
-            console.log('test');
+
+            /** check if action is chosen and if figure chosen is in possesion of the active player */
+            if (CanvasManager.isActionChosen === true &&
+                checkIfFigureBelongsToPlayer(cellX, cellY, CanvasManager.players[CanvasManager.turn]) === true
+
+            ) {
+                CanvasManager.chosenFigure = CanvasManager.field[9 * cellY + cellX];
+                changeIsFigureChosen(true);
+
+                /** if action is 'move' show possible moves */
+                if (CanvasManager.chosenAction === 'move') {
+                    let possibleMoves = CanvasManager.drawPossibleMoves(CanvasManager.chosenFigure);
+                }
+
+                switch (CanvasManager.chosenAction) {
+                    case 'move':
+                    case 'attack':
+                        /** if 'move' action, right click on field, chosen figure goes to the field
+                         *  if 'attack' action, right click on another figure, then first figure attacks the second one
+                         **/
+                        CanvasManager.canvas.addEventListener('contextmenu', function (e) {
+                            e.preventDefault();
+                            let cellCoordinates = CanvasManager.getClickedCell();
+                            let rightClickedCellX = cellCoordinates.x;
+                            let rightClickedCellY = cellCoordinates.y;
+                            switch (CanvasManager.chosenAction) {
+                                case 'move':
+                                    /** gets possible positions */
+                                    let possiblePositions = getPossiblePositions(CanvasManager.chosenFigure);
+                                    possiblePositions.forEach(function (possiblePosition) {
+                                        /** move only permitted when field is in possible positions */
+                                        if (possiblePosition.x === rightClickedCellX && possiblePosition.y === rightClickedCellY) {
+                                            changeIsActionChosen(false);
+                                            /** triggers figure movement */
+                                            moveFigure(CanvasManager.chosenFigure, rightClickedCellX, rightClickedCellY);
+                                        }
+                                    });
+                                    return;
+                                case 'attack':
+                                    if (CanvasManager.chosenFigure.x === cellX && CanvasManager.chosenFigure.y === cellY) {
+                                        changeIsActionChosen(false);
+                                        /** triggers attack */
+                                        attackFigure(cellX, cellY, rightClickedCellX, rightClickedCellY);
+                                    }
+                                    return;
+                                default:
+                                    break;
+                            }
+                        });
+                        break;
+                    case 'heal':
+                        changeIsActionChosen(false);
+                        /** triggers healing functionality */
+                        healFigure(CanvasManager.chosenFigure);
+                        break;
+                    default:
+                        break;
+                }
+            }
         });
+    } else {
+        endOfGame();
     }
 }
 
@@ -478,7 +364,6 @@ function chooseFigure() {
 function moveFigure(figure, x, y) {
     /** check if no other movements running */
     if (CanvasManager.isMovementFinished === false) {
-        console.log(figure);
         let emptyCellX = figure.x;
         let emptyCellY = figure.y;
         /** update field with new coordinates */
@@ -504,7 +389,6 @@ function moveFigure(figure, x, y) {
         });
         /** empty old cell */
         CanvasManager.emptyCell(emptyCellX, emptyCellY);
-        console.log(CanvasManager.field);
         /** redraw updated canvas */
         CanvasManager.draw();
         /** change turn */
@@ -530,13 +414,12 @@ function moveFigure(figure, x, y) {
 function attackFigure(attackingX, attackingY, attackedX, attackedY) {
     /** check if no other attacks are running */
     if (CanvasManager.isAttackFinished === false) {
-        console.log('attack figure');
         /** gets attacking and attacked figures by their coordinates */
         let attackingFigure = getFigureByCoordinates(attackingX, attackingY);
         let attackedFigure = getFigureByCoordinates(attackedX, attackedY);
         /** check if attack is possible */
         if (checkIfAttackIsPossible(attackingX, attackingY, attackedX, attackedY) === true) {
-            /** chack what object is being attacked */
+            /** check what object is being attacked */
             switch (attackedFigure.type) {
                 /** if obstacle is being attack it is destroyed and stop existing on field */
                 case 'obstacle':
@@ -580,7 +463,6 @@ function attackFigure(attackingX, attackingY, attackedX, attackedY) {
                 changeIsActionChosen(false);
                 CanvasManager.chosenAction = '';
                 CanvasManager.chosenFigure = '';
-                console.log('attack finished');
                 /** change turn */
                 changeTurn();
                 /** increase round */
@@ -591,7 +473,6 @@ function attackFigure(attackingX, attackingY, attackedX, attackedY) {
         } else {
             /** if attack is not possible */
             let questionBox = document.querySelector(`#questionBoxPlayer${CanvasManager.turn + 1}`);
-            // console.log(questionBox);
             questionBox.innerHTML += `<p>Attack not possible</p>`;
             CanvasManager.isAttackFinished = true;
             setTimeout(function () {
@@ -600,12 +481,10 @@ function attackFigure(attackingX, attackingY, attackedX, attackedY) {
                 changeIsActionChosen(false);
                 CanvasManager.chosenAction = '';
                 CanvasManager.chosenFigure = '';
-                console.log('attack finished');
                 /** generate battle without changing the turn */
                 generateBattle();
             }, 2000);
         }
-
     }
 }
 
@@ -616,39 +495,23 @@ function attackFigure(attackingX, attackingY, attackedX, attackedY) {
 function healFigure(figure) {
     /** check if no other healing are running */
     if (CanvasManager.isHealingFinished === false) {
-        console.log(figure);
-        console.log('heal');
         /** generate first dice result */
         let firstDiceResult = randomGenerator(1, 6);
-        console.log('first dice: ' + firstDiceResult);
         /** update health */
         let newHealth = figure.health + firstDiceResult;
-        console.log(newHealth);
         if (newHealth > figure.maxHealth) {
             figure.health = figure.maxHealth;
         } else {
             figure.health = newHealth;
         }
-        // figure.health = ((figure.health + firstDiceResult) > figure.maxHealth) ? figure.maxHealth : (figure.health + firstDiceResult);
-        console.log(figure.health);
         CanvasManager.players[CanvasManager.turn].figures.forEach(function (playerFigure) {
             if (playerFigure.id === figure.id) {
                 playerFigure.health = newHealth;
             }
         });
-        console.log(CanvasManager.players[CanvasManager.turn]);
-
-        // CanvasManager.isHealingFinished = true;
-        // changeIsFigureChosen(false);
-        // changeIsActionChosen(false);
-        // CanvasManager.chosenAction = '';
-        // CanvasManager.chosenFigure = '';
-        // changeTurn();
-        // generateBattle();
 
         /** generate second dice result, responsible for player receiving bonus turn */
         let secondDiceResult = randomGenerator(1, 6);
-        console.log('second dice: ' + secondDiceResult);
         /** if result is even, no bonus turn */
         if (secondDiceResult % 2 === 0) {
             CanvasManager.isHealingFinished = true;
@@ -677,7 +540,51 @@ function healFigure(figure) {
 
 
 function endOfGame() {
-    console.log('end');
+    let activePlayer = null;
+    let inactivePlayer = null;
+    /** check which player's turn is */
+    if (CanvasManager.turn === 0) {
+        activePlayer = CanvasManager.players[0];
+        inactivePlayer = CanvasManager.players[1];
+    } else if (CanvasManager.turn === 1) {
+        activePlayer = CanvasManager.players[1];
+        inactivePlayer = CanvasManager.players[0];
+    }
+    let questionBoxActive = document.querySelector(`#questionBoxPlayer${activePlayer.id}`);
+    questionBoxActive.innerHTML = `<p>${activePlayer.name}</p>`;
+    questionBoxActive.innerHTML += `<p>Points: ${activePlayer.points}</p>`;
+    questionBoxActive.innerHTML += `<p>Rounds: ${CanvasManager.round}</p>`;
+    questionBoxActive.innerHTML += `<p>Lost figures: </p>`;
+    activePlayer.lostFigures.forEach(function (lostFigure) {
+        questionBoxActive.innerHTML += `<p>${lostFigure.figure}, id: ${lostFigure.id}</p>`;
+    });
+
+    let questionBoxInactive = document.querySelector(`#questionBoxPlayer${inactivePlayer.id}`);
+    questionBoxInactive.innerHTML = `<p>${inactivePlayer.name}</p>`;
+    questionBoxInactive.innerHTML += `<p>Points: ${inactivePlayer.points}</p>`;
+    questionBoxInactive.innerHTML += `<p>Rounds: ${CanvasManager.round}</p>`;
+    questionBoxInactive.innerHTML += `<p>Lost figures: </p>`;
+    inactivePlayer.lostFigures.forEach(function (lostFigure) {
+        questionBoxInactive.innerHTML += `<p>${lostFigure.figure}, id: ${lostFigure.id}</p>`;
+    });
+
+    let infoMessage = document.getElementById('infoBox');
+    infoMessage.className = 'hide';
+
+    let endOfGameMessageHolder = document.getElementById('endOfGameMessage');
+    endOfGameMessageHolder.className = '';
+    endOfGameMessageHolder.innerHTML += `<p>Winner: ${inactivePlayer.name}</p>`;
+
+    let startNewGameButton = document.getElementById('startNewGame');
+    startNewGameButton.className = '';
+    startNewGameButton.addEventListener('click', function (e) {
+        window.location.reload();
+    });
+
+    CanvasManager.canvas.addEventListener('click', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+    });
 }
 
 /**
@@ -878,7 +785,6 @@ function getPossiblePositions(figure) {
 function checkIfFigureBelongsToPlayer(x, y, player) {
     let result = false;
     player.figures.forEach(function (figure) {
-        // console.log(figure);
         if (figure.x === x && figure.y === y) {
             result = true;
         }
@@ -949,7 +855,6 @@ function generateDiceSituation(attackedFigure) {
     } else {
         battleState = 2;
     }
-    console.log(diceSum);
     return battleState;
 }
 
